@@ -71,26 +71,26 @@ const ProcessManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, filters]);
+  }, [currentPage, filters, clients.length]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
 
-  const handleStatusChange = async (processId, newStatus) => {
-    try {
-      // Por enquanto, vamos usar a rota de casos
-      await adminService.put(`/api/admin/cases/${processId}`, {
-        status: newStatus
-      });
+  // const handleStatusChange = async (processId, newStatus) => {
+  //   try {
+  //     // Por enquanto, vamos usar a rota de casos
+  //     await adminService.put(`/api/admin/cases/${processId}`, {
+  //       status: newStatus
+  //     });
 
-      console.log(`✅ Status do caso ${processId} alterado para: ${newStatus}`);
-      fetchData(); // Recarregar dados
-    } catch (error) {
-      console.error('❌ Erro ao alterar status:', error);
-      setError('Erro ao alterar status do processo');
-    }
-  };
+  //     console.log(`✅ Status do caso ${processId} alterado para: ${newStatus}`);
+  //     fetchData(); // Recarregar dados
+  //   } catch (error) {
+  //     console.error('❌ Erro ao alterar status:', error);
+  //     setError('Erro ao alterar status do processo');
+  //   }
+  // };
 
   const getStatusBadge = (status) => {
     const statusConfig = {

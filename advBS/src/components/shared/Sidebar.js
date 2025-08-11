@@ -3,9 +3,9 @@ import React from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-  faUsers, faVideo, faChartBar, faBook,
-  faHeart, faList, faHistory, faSignOutAlt,
-  faGavel, faFileAlt, faCalendarAlt, faUser,
+  faUsers, faChartBar, faBook,
+  faHeart, faHistory, faSignOutAlt,
+  faGavel, faFileAlt, faUser,
   faClipboardList
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from '../../context/AuthContext';

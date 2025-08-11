@@ -448,7 +448,7 @@ const del = (endpoint) => apiRequest(endpoint, {
   method: 'DELETE',
 });
 
-export default {
+const apiService = {
   get,
   post,
   put,
@@ -462,3 +462,5 @@ export default {
   clientService,
   adminService,
 };
+
+export default apiService;

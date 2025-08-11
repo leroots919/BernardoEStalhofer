@@ -1,6 +1,6 @@
 // src/components/admin/ClientManagement.js
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Edit, Trash2, Eye } from 'lucide-react';
+import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { adminService } from '../../services/api';
 
 const ClientManagement = () => {
@@ -34,7 +34,7 @@ const ClientManagement = () => {
   useEffect(() => {
     fetchClients();
     fetchServices();
-  }, []);
+  }, [fetchClients]);
 
   useEffect(() => {
     if (!clients || !Array.isArray(clients)) {

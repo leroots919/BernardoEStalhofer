@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner } from '@fortawesome/free-solid-svg-icons';
-import { faGavel } from '@fortawesome/free-solid-svg-icons';
+// import { faGavel } from '@fortawesome/free-solid-svg-icons';
 import BSLogo from '../shared/BSLogo';
 
 const Login = () => {
@@ -87,9 +87,9 @@ const Login = () => {
           </div>
 
           <div className="text-center">
-            <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-200 text-sm">
+            <button type="button" className="text-gray-400 hover:text-blue-400 transition-colors duration-200 text-sm bg-transparent border-none cursor-pointer">
               Esqueceu sua senha?
-            </a>
+            </button>
           </div>
 
           <div className="text-center mt-4">

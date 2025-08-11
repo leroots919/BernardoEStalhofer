@@ -13,7 +13,7 @@ const LandingPage = () => {
     whatsapp: '',
     assunto: ''
   });
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleLoginClick = () => {
     setShowLoginModal(true);
@@ -455,7 +455,7 @@ const LoginModal = ({ onSuccess }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const { login, loading, error } = useAuth();
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

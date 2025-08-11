@@ -14,7 +14,7 @@ const MyCases = () => {
   const [selectedCaseId, setSelectedCaseId] = useState(null);
   const [showDetails, setShowDetails] = useState(false);
   const [selectedCase, setSelectedCase] = useState(null);
-  const [error, setError] = useState(null);
+  // const [error, setError] = useState(null);
 
   useEffect(() => {
     console.log('🔍 MyCases useEffect triggered - calling fetchCases');

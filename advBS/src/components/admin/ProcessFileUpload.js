@@ -276,21 +276,21 @@ const ProcessFileUpload = () => {
     return case_ ? (case_.title || 'Título não informado') : 'Caso geral';
   };
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
-      'pendente': { color: 'bg-yellow-500', text: 'Pendente' },
-      'em_andamento': { color: 'bg-blue-500', text: 'Em Andamento' },
-      'parado_na_justica': { color: 'bg-orange-500', text: 'Parado na Justiça' },
-      'concluido': { color: 'bg-green-500', text: 'Concluído' }
-    };
-    
-    const config = statusConfig[status] || { color: 'bg-gray-500', text: status };
-    return (
-      <span className={`px-2 py-1 rounded-full text-xs text-white ${config.color}`}>
-        {config.text}
-      </span>
-    );
-  };
+  // const getStatusBadge = (status) => {
+  //   const statusConfig = {
+  //     'pendente': { color: 'bg-yellow-500', text: 'Pendente' },
+  //     'em_andamento': { color: 'bg-blue-500', text: 'Em Andamento' },
+  //     'parado_na_justica': { color: 'bg-orange-500', text: 'Parado na Justiça' },
+  //     'concluido': { color: 'bg-green-500', text: 'Concluído' }
+  //   };
+  //
+  //   const config = statusConfig[status] || { color: 'bg-gray-500', text: status };
+  //   return (
+  //     <span className={`px-2 py-1 rounded-full text-xs text-white ${config.color}`}>
+  //       {config.text}
+  //     </span>
+  //   );
+  // };
 
   if (loading) {
     return (
