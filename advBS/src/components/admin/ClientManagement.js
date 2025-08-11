@@ -1,5 +1,5 @@
 // src/components/admin/ClientManagement.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { adminService } from '../../services/api';
 
@@ -58,7 +58,7 @@ const ClientManagement = () => {
     setFilteredClients(filtered);
   }, [clients, searchTerm]);
 
-  const fetchClients = async () => {
+  const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
       const response = await adminService.getClients();
@@ -84,7 +84,7 @@ const ClientManagement = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const fetchClientCases = async (clientId) => {
     try {

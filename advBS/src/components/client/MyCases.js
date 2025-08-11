@@ -126,7 +126,13 @@ const MyCases = () => {
         title="Meus Casos" 
         subtitle="Acompanhe o andamento dos seus processos jurídicos"
       />
-      
+
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          {error}
+        </div>
+      )}
+
       {cases.length === 0 ? (
         <Card className="text-center py-12">
           <div className="text-6xl mb-4">📋</div>
