@@ -31,33 +31,6 @@ const ClientManagement = () => {
     service_id: 1 // ID padrão do primeiro serviço
   });
 
-  useEffect(() => {
-    fetchClients();
-    fetchServices();
-  }, [fetchClients]);
-
-  useEffect(() => {
-    if (!clients || !Array.isArray(clients)) {
-      setFilteredClients([]);
-      return;
-    }
-
-    const filtered = clients.filter(client => {
-      if (!client) return false;
-
-      const name = client.name || '';
-      const email = client.email || '';
-      const cpf = client.cpf || '';
-
-      return (
-        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        cpf.includes(searchTerm)
-      );
-    });
-    setFilteredClients(filtered);
-  }, [clients, searchTerm]);
-
   const fetchClients = useCallback(async () => {
     try {
       setLoading(true);
@@ -85,6 +58,33 @@ const ClientManagement = () => {
       setLoading(false);
     }
   }, []);
+
+  useEffect(() => {
+    fetchClients();
+    fetchServices();
+  }, [fetchClients]);
+
+  useEffect(() => {
+    if (!clients || !Array.isArray(clients)) {
+      setFilteredClients([]);
+      return;
+    }
+
+    const filtered = clients.filter(client => {
+      if (!client) return false;
+
+      const name = client.name || '';
+      const email = client.email || '';
+      const cpf = client.cpf || '';
+
+      return (
+        name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        cpf.includes(searchTerm)
+      );
+    });
+    setFilteredClients(filtered);
+  }, [clients, searchTerm]);
 
   const fetchClientCases = async (clientId) => {
     try {
