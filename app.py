@@ -1,7 +1,7 @@
 # app.py - Aplicação FastAPI ultra-simples
 import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMmddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 # Criar aplicação
 app = FastAPI(

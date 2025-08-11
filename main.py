@@ -1,7 +1,7 @@
 # main.py - Aplicação FastAPI simplificada para o Railway
 import os
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMmddleware
+from fastapi.middleware.cors import CORSMiddleware
 
 # Criar aplicação FastAPI
 app = FastAPI(
@@ -12,7 +12,7 @@ app = FastAPI(
 
 # Configurar CORS
 app.add_middleware(
-    CORSMmddleware,
+    CORSMiddleware,
     allow_origins=["*"],  # Em produção, especificar domínios
     allow_credentials=True,
     allow_methods=["*"],
