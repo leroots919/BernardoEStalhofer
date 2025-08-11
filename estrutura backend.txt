@@ -1,0 +1,10 @@
+poker_academy_api/
+├── src/
+│   ├── routes/
+│   │   └── class_routes.py
+	    user_routes  
+│   ├── models.py            
+│   └── main.py
+├── .env                     
+├── requirements.txt
+└── venv/

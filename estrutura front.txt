@@ -1,0 +1,21 @@
+poker_academy/
+├── src/
+│   ├── components/
+│   │   └── admin
+		adminpanel
+		analytics
+		classmanagement
+		studentmanagement
+	    auth
+		login
+	    shared
+		loading
+		sidebar
+	    student 
+		catalog
+		favorites
+		history	
+		playlists
+		studentpanel 
+│   ├── app            
+│   └── index

@@ -1,0 +1,13 @@
+name: DevAgent MCP Server
+version: 1.0.0
+schema: v1
+
+mcpServers:
+  - name: WebDev MCP Server
+    command: npx
+    args:
+      - -y
+      - continue-devagent
+    env:
+      CONTEXT_PROVIDERS: folder,codebase,terminal,problems,code
+      TOOLS: terminal,filesystem

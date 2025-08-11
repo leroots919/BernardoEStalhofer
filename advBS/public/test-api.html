@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .result {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 15px;
+            margin: 10px 0;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .error {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+        .success {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Teste de API - Bernardo & Stahlhöfer</h1>
+        
+        <h2>1. Teste de Conectividade</h2>
+        <button onclick="testHealth()">Testar Health Check</button>
+        <div id="health-result" class="result"></div>
+
+        <h2>2. Teste de Login</h2>
+        <button onclick="testLogin()">Login Admin</button>
+        <button onclick="testClientLogin()">Login Cliente</button>
+        <div id="login-result" class="result"></div>
+
+        <h2>3. Teste de Perfil</h2>
+        <button onclick="testProfile()">Buscar Perfil</button>
+        <div id="profile-result" class="result"></div>
+
+        <h2>4. Teste de Casos</h2>
+        <button onclick="testCases()">Buscar Casos</button>
+        <button onclick="testStats()">Buscar Estatísticas</button>
+        <div id="cases-result" class="result"></div>
+
+        <h2>5. Teste Direto (sem proxy)</h2>
+        <button onclick="testDirect()">Teste Direto Backend</button>
+        <div id="direct-result" class="result"></div>
+    </div>
+
+    <script>
+        let token = null;
+
+        async function testHealth() {
+            const resultDiv = document.getElementById('health-result');
+            try {
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Health Check OK\nStatus: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro no Health Check: ${error.message}`;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('login-result');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@advtransito.com',
+                        password: 'admin123'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    token = data.access_token;
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Login Admin OK\nStatus: ${response.status}\nToken: ${token ? 'Recebido' : 'Não recebido'}\nData: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Erro no Login: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro no Login: ${error.message}`;
+            }
+        }
+
+        async function testClientLogin() {
+            const resultDiv = document.getElementById('login-result');
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email: 'vanessafk007@gmail.com',
+                        password: '123456'
+                    })
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    token = data.access_token;
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Login Cliente OK\nStatus: ${response.status}\nToken: ${token ? 'Recebido' : 'Não recebido'}\nData: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Erro no Login: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro no Login: ${error.message}`;
+            }
+        }
+
+        async function testProfile() {
+            const resultDiv = document.getElementById('profile-result');
+            if (!token) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Faça login primeiro!';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/client/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const data = await response.json();
+                
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Perfil OK\nStatus: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Erro no Perfil: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro no Perfil: ${error.message}`;
+            }
+        }
+
+        async function testCases() {
+            const resultDiv = document.getElementById('cases-result');
+            if (!token) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Faça login primeiro!';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/client/cases', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Casos OK\nStatus: ${response.status}\nTotal: ${data.length} casos\nData: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Erro nos Casos: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro nos Casos: ${error.message}`;
+            }
+        }
+
+        async function testStats() {
+            const resultDiv = document.getElementById('cases-result');
+            if (!token) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = '❌ Faça login primeiro!';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/client/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json',
+                    }
+                });
+                const data = await response.json();
+
+                if (response.ok) {
+                    resultDiv.className = 'result success';
+                    resultDiv.textContent = `✅ Estatísticas OK\nStatus: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+                } else {
+                    resultDiv.className = 'result error';
+                    resultDiv.textContent = `❌ Erro nas Estatísticas: ${JSON.stringify(data, null, 2)}`;
+                }
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro nas Estatísticas: ${error.message}`;
+            }
+        }
+
+        async function testDirect() {
+            const resultDiv = document.getElementById('direct-result');
+            try {
+                const response = await fetch('http://localhost:8000/api/health');
+                const data = await response.json();
+                resultDiv.className = 'result success';
+                resultDiv.textContent = `✅ Teste Direto OK\nStatus: ${response.status}\nData: ${JSON.stringify(data, null, 2)}`;
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = `❌ Erro no Teste Direto: ${error.message}\n\nIsso é esperado devido ao CORS. O proxy deve resolver isso.`;
+            }
+        }
+    </script>
+</body>
+</html>

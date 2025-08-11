@@ -1,0 +1,220 @@
+-- =====================================================
+-- POKER ACADEMY - ESTRUTURA DO BANCO DE DADOS
+-- =====================================================
+-- Versão: 2.0
+-- Data: Janeiro 2025
+-- Descrição: Plataforma de streaming educacional para poker
+-- =====================================================
+
+CREATE DATABASE IF NOT EXISTS poker_academy;
+USE poker_academy;
+
+-- =====================================================
+-- TABELA DE USUÁRIOS
+-- =====================================================
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password_hash VARCHAR(255) NOT NULL,
+    type ENUM('admin', 'student') NOT NULL DEFAULT 'student',
+    register_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_email (email),
+    INDEX idx_type (type),
+    INDEX idx_name (name)
+);
+
+-- =====================================================
+-- TABELA DE AULAS
+-- =====================================================
+CREATE TABLE classes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(200) NOT NULL,
+    instructor VARCHAR(100) NOT NULL,
+    date DATE NOT NULL,
+    category ENUM('preflop', 'postflop', 'mental', 'torneos', 'cash') NOT NULL,
+    video_type ENUM('youtube', 'local') NOT NULL,
+    video_url VARCHAR(500) NULL,
+    video_path VARCHAR(500) NULL,
+    priority INT NOT NULL DEFAULT 5,
+    views INT NOT NULL DEFAULT 0,
+    duration_minutes INT NULL,
+    description TEXT NULL,
+    thumbnail_url VARCHAR(500) NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    INDEX idx_category (category),
+    INDEX idx_instructor (instructor),
+    INDEX idx_date (date),
+    INDEX idx_priority (priority),
+    INDEX idx_active (is_active),
+    FULLTEXT idx_search (name, instructor, description)
+);
+
+-- =====================================================
+-- TABELA DE PROGRESSO DO USUÁRIO
+-- =====================================================
+CREATE TABLE user_progress (
+    user_id INT NOT NULL,
+    class_id INT NOT NULL,
+    progress INT NOT NULL DEFAULT 0,
+    watched BOOLEAN NOT NULL DEFAULT FALSE,
+    last_watched DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    watch_time_seconds INT DEFAULT 0,
+    completed_at DATETIME NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, class_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+
+    INDEX idx_user_progress (user_id, progress),
+    INDEX idx_last_watched (last_watched),
+    INDEX idx_completed (completed_at)
+);
+
+-- =====================================================
+-- TABELA DE FAVORITOS
+-- =====================================================
+CREATE TABLE favorites (
+    user_id INT NOT NULL,
+    class_id INT NOT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, class_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+
+    INDEX idx_user_favorites (user_id),
+    INDEX idx_class_favorites (class_id)
+);
+
+-- =====================================================
+-- TABELA DE PLAYLISTS
+-- =====================================================
+CREATE TABLE playlists (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    name VARCHAR(100) NOT NULL,
+    description TEXT NULL,
+    is_public BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+
+    INDEX idx_user_playlists (user_id),
+    INDEX idx_public_playlists (is_public)
+);
+
+-- =====================================================
+-- TABELA DE AULAS DAS PLAYLISTS
+-- =====================================================
+CREATE TABLE playlist_classes (
+    playlist_id INT NOT NULL,
+    class_id INT NOT NULL,
+    order_position INT NOT NULL DEFAULT 0,
+    added_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (playlist_id, class_id),
+    FOREIGN KEY (playlist_id) REFERENCES playlists(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+
+    INDEX idx_playlist_order (playlist_id, order_position)
+);
+
+-- =====================================================
+-- TABELA DE COMENTÁRIOS (OPCIONAL - FUTURA IMPLEMENTAÇÃO)
+-- =====================================================
+CREATE TABLE comments (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    class_id INT NOT NULL,
+    content TEXT NOT NULL,
+    parent_comment_id INT NULL,
+    is_approved BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_comment_id) REFERENCES comments(id) ON DELETE CASCADE,
+
+    INDEX idx_class_comments (class_id),
+    INDEX idx_user_comments (user_id),
+    INDEX idx_approved_comments (is_approved)
+);
+
+-- =====================================================
+-- TABELA DE AVALIAÇÕES (OPCIONAL - FUTURA IMPLEMENTAÇÃO)
+-- =====================================================
+CREATE TABLE ratings (
+    user_id INT NOT NULL,
+    class_id INT NOT NULL,
+    rating INT NOT NULL CHECK (rating >= 1 AND rating <= 5),
+    review TEXT NULL,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_id, class_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (class_id) REFERENCES classes(id) ON DELETE CASCADE,
+
+    INDEX idx_class_ratings (class_id, rating)
+);
+
+-- =====================================================
+-- DADOS INICIAIS DE TESTE
+-- =====================================================
+
+-- Inserir usuário administrador padrão
+INSERT INTO users (name, email, password_hash, type) VALUES
+('admin', 'admin@pokeracademy.com', '$2b$12$dOmIj2KnNKo1cAirC.FAguG/LZlpnwVVE8ZnZ.XyDx9ZdD36O4b9C', 'admin');
+
+-- Inserir usuário aluno de teste
+INSERT INTO users (name, email, password_hash, type) VALUES
+('aluno', 'aluno@pokeracademy.com', '$2b$12$dOmIj2KnNKo1cAirC.FAguG/LZlpnwVVE8ZnZ.XyDx9ZdD36O4b9C', 'student');
+
+-- Inserir aulas de exemplo
+INSERT INTO classes (name, instructor, date, category, video_type, video_url, priority, description) VALUES
+('Fundamentos do Pré-Flop', 'Daniel Negreanu', '2024-01-15', 'preflop', 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 1, 'Aprenda os conceitos básicos do jogo pré-flop'),
+('Estratégias Avançadas de Pós-Flop', 'Phil Ivey', '2024-01-20', 'postflop', 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 2, 'Técnicas avançadas para o jogo pós-flop'),
+('Psicologia do Poker', 'Annie Duke', '2024-01-25', 'mental', 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 3, 'Aspectos psicológicos e mentais do poker'),
+('Estratégias para Torneios', 'Chris Moneymaker', '2024-02-01', 'torneos', 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 4, 'Como jogar torneios de poker com sucesso'),
+('Cash Game: Gestão de Bankroll', 'Doyle Brunson', '2024-02-05', 'cash', 'youtube', 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', 5, 'Gerenciamento de banca em cash games');
+
+-- =====================================================
+-- COMENTÁRIOS E OBSERVAÇÕES
+-- =====================================================
+--
+-- CREDENCIAIS DE TESTE:
+-- Admin: admin@pokeracademy.com / admin123
+-- Aluno: aluno@pokeracademy.com / aluno123
+--
+-- MELHORIAS IMPLEMENTADAS:
+-- 1. Adicionados índices para melhor performance
+-- 2. Campo password_hash em vez de password
+-- 3. Campos created_at e updated_at em todas as tabelas
+-- 4. Campo name único na tabela users
+-- 5. Campos adicionais para funcionalidades futuras
+-- 6. Constraints e validações adequadas
+-- 7. Dados de teste incluídos
+--
+-- FUNCIONALIDADES SUPORTADAS:
+-- - Sistema de autenticação JWT
+-- - Gestão de usuários (admin/student)
+-- - Catálogo de aulas com filtros
+-- - Sistema de favoritos
+-- - Playlists personalizadas
+-- - Progresso de visualização
+-- - Upload de vídeos (YouTube/local)
+-- - Analytics e relatórios
+--
+-- =====================================================
