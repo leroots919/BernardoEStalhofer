@@ -1,0 +1,14 @@
+[variables]
+PORT = "8000"
+
+[phases.setup]
+aptPkg = ["gcc", "default-libmysqlclient-dev", "pkg-config"]
+
+[phases.install]
+cmd = "pip install -r requirements.txt"
+
+[phases.build]
+cmd = "mkdir -p uploads/documents"
+
+[start]
+cmd = "uvicorn app:app --host 0.0.0.0 --port $PORT --log-level info"

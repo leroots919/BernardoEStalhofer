@@ -55,6 +55,14 @@ uploads/documents/*
 uploads/videos/*
 !uploads/videos/.gitkeep
 
+# Arquivos grandes (>100MB)
+*.mp4
+*.avi
+*.mov
+*.mkv
+*.wmv
+*.flv
+
 # Node modules (para o frontend)
 node_modules/
 npm-debug.log*
