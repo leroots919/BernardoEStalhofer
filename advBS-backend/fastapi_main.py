@@ -7,14 +7,14 @@ from pathlib import Path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
 from fastapi import FastAPI, HTTPException, Depends, status, File, UploadFile, Header, Form, Request, Query
-from fastapi.middleware.cors import CORSMmddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from typing import Optional, List
 import uvicorn
 from dotenv import load_dotenv
-from sqlalchemy import text, or
+from sqlalchemy import text, or_
 
 # Carregar variáveis de ambiente
 load_dotenv()

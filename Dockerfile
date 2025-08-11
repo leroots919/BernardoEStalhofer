@@ -20,10 +20,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copiar código do backend
 COPY advBS-backend/ .
 
-# Copiar script de inicialização
-COPY start.sh /app/start.sh
-RUN chmod +x /app/start.sh
-
 # Criar diretório para uploads
 RUN mkdir -p uploads/documents
 
@@ -31,4 +27,4 @@ RUN mkdir -p uploads/documents
 EXPOSE 8000
 
 # Comando para iniciar a aplicação
-CMD ["/app/start.sh"]
+CMD ["sh", "-c", "uvicorn fastapi_main:app --host 0.0.0.0 --port ${PORT:-8000}"]
