@@ -29,7 +29,9 @@ async def health_check():
         "message": "TESTE - FastAPI funcionando!",
         "status": "ok",
         "version": "3.0.0-TEST",
-        "timestamp": "2024-12-21 - TESTE DEPLOY"
+        "timestamp": "2024-12-21 - TESTE DEPLOY",
+        "railway_env": os.getenv("RAILWAY_ENVIRONMENT", "local"),
+        "port": os.getenv("PORT", "5000")
     }
 
 @app.get("/api/admin/clients")

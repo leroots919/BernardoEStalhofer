@@ -19,7 +19,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Copiar código de teste
 COPY test_server.py .
-COPY .env .
 
 # Criar diretório para uploads
 RUN mkdir -p uploads/documents
