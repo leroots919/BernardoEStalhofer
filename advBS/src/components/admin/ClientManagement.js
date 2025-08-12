@@ -37,9 +37,10 @@ const ClientManagement = () => {
       const response = await adminService.getClients();
       console.log('Resposta completa da API:', response);
 
-      // A resposta vem no formato { data: [...] }
-      const clients = response.data || response || [];
+      // A resposta vem no formato { data: { data: [...] } } (duplo data do axios)
+      const clients = response?.data?.data || response?.data || [];
       console.log('Clientes carregados:', clients);
+      console.log('🔍 Tipo de clients:', typeof clients, Array.isArray(clients));
 
       setClients(Array.isArray(clients) ? clients : []);
 

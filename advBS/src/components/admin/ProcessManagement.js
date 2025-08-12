@@ -30,8 +30,16 @@ const ProcessManagement = () => {
       const casesResponse = await adminService.get('/api/admin/cases');
       console.log('📋 Casos carregados:', casesResponse);
 
-      // Os casos vêm como array direto
-      let allCases = casesResponse.data || [];
+      // Os casos vêm com duplo data do axios
+      let allCases = casesResponse?.data?.data || casesResponse?.data || [];
+      console.log('🔍 Tipo de allCases:', typeof allCases, Array.isArray(allCases));
+      console.log('🔍 allCases:', allCases);
+
+      // Garantir que é array
+      if (!Array.isArray(allCases)) {
+        console.log('❌ allCases não é array, convertendo...');
+        allCases = [];
+      }
 
       // Aplicar filtros localmente
       let filteredCases = allCases;
@@ -63,7 +71,7 @@ const ProcessManagement = () => {
       // Buscar clientes para o filtro
       if (clients.length === 0) {
         const clientsResponse = await adminService.get('/api/admin/clients');
-        setClients(clientsResponse.data || []);
+        setClients(clientsResponse?.data?.data || clientsResponse?.data || []);
       }
     } catch (error) {
       console.error('❌ Erro ao carregar dados:', error);
