@@ -267,6 +267,101 @@ async def update_client_profile(profile_data: dict, db_session=Depends(get_db), 
         print(f"❌ Erro ao atualizar perfil: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== ROTAS ADMIN ====================
+
+@app.get("/api/admin/clients")
+async def get_admin_clients(db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Listar todos os clientes (admin)"""
+    try:
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        print("🔍 Buscando todos os clientes...")
+
+        # Buscar todos os usuários do tipo cliente
+        query = """
+        SELECT id, name, username, email, cpf, phone, address, city, state,
+               zip_code, register_date, last_login, type
+        FROM users WHERE type = 'cliente'
+        ORDER BY register_date DESC
+        """
+        result = db_session.execute(text(query))
+        clients = result.fetchall()
+
+        clients_list = []
+        for client in clients:
+            clients_list.append({
+                'id': client.id,
+                'name': client.name,
+                'username': client.username,
+                'email': client.email,
+                'cpf': client.cpf,
+                'phone': client.phone,
+                'address': client.address,
+                'city': client.city,
+                'state': client.state,
+                'zip_code': client.zip_code,
+                'register_date': client.register_date.isoformat() if client.register_date else None,
+                'last_login': client.last_login.isoformat() if client.last_login else None,
+                'type': client.type
+            })
+
+        print(f"✅ {len(clients_list)} clientes encontrados")
+        return {"data": clients_list}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Erro ao buscar clientes: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.get("/api/admin/cases")
+async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Listar todos os casos (admin)"""
+    try:
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        print("🔍 Buscando todos os casos...")
+
+        # Buscar todos os casos com informações do cliente
+        query = """
+        SELECT cc.id, cc.user_id, cc.service_id, cc.title, cc.description,
+               cc.status, cc.created_at, cc.updated_at,
+               u.name as client_name, u.email as client_email
+        FROM client_cases cc
+        LEFT JOIN users u ON cc.user_id = u.id
+        ORDER BY cc.created_at DESC
+        """
+        result = db_session.execute(text(query))
+        cases = result.fetchall()
+
+        cases_list = []
+        for case in cases:
+            cases_list.append({
+                'id': case.id,
+                'user_id': case.user_id,
+                'service_id': case.service_id,
+                'title': case.title,
+                'description': case.description,
+                'status': case.status,
+                'created_at': case.created_at.isoformat() if case.created_at else None,
+                'updated_at': case.updated_at.isoformat() if case.updated_at else None,
+                'client_name': case.client_name,
+                'client_email': case.client_email
+            })
+
+        print(f"✅ {len(cases_list)} casos encontrados")
+        return {"data": cases_list}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ Erro ao buscar casos: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
