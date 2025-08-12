@@ -1077,6 +1077,76 @@ async def create_case_alternative(request: Request, db_session=Depends(get_db), 
             pass
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/create-case-public")
+async def create_case_public(request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Rota pública para criar caso - Versão que DEVE funcionar"""
+    try:
+        print("🚀 ROTA PÚBLICA - CRIAR CASO")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Obter dados
+        data = await request.json()
+        print(f"📝 Dados recebidos: {data}")
+
+        client_id = data.get('client_id')
+        title = data.get('title', 'Novo Caso')
+        description = data.get('description', '')
+        status = data.get('status', 'pendente')
+
+        print(f"📝 client_id: {client_id}, title: {title}")
+
+        if not client_id:
+            raise HTTPException(status_code=400, detail="client_id obrigatório")
+
+        # Usar a forma mais simples possível
+        try:
+            # Primeiro, verificar se a tabela existe
+            check_table = db_session.execute(text("SHOW TABLES LIKE 'client_cases'"))
+            if not check_table.fetchone():
+                raise HTTPException(status_code=500, detail="Tabela client_cases não existe")
+
+            # Insert com valores diretos
+            insert_sql = f"""
+            INSERT INTO client_cases (client_id, title, description, status, created_at)
+            VALUES ({client_id}, '{title}', '{description}', '{status}', NOW())
+            """
+
+            print(f"📝 SQL: {insert_sql}")
+
+            result = db_session.execute(text(insert_sql))
+            db_session.commit()
+
+            case_id = result.lastrowid
+            print(f"✅ Caso {case_id} criado com sucesso!")
+
+            return {
+                "data": {
+                    "id": case_id,
+                    "title": title,
+                    "description": description,
+                    "status": status,
+                    "client_id": client_id,
+                    "success": True
+                }
+            }
+
+        except Exception as sql_error:
+            print(f"❌ ERRO SQL: {sql_error}")
+            raise HTTPException(status_code=500, detail=f"Erro SQL: {str(sql_error)}")
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO GERAL: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
