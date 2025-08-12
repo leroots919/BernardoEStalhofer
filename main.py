@@ -1020,6 +1020,63 @@ async def create_client_case(client_id: int, request: Request, db_session=Depend
             pass
         raise HTTPException(status_code=500, detail=f"Erro: {str(e)}")
 
+@app.post("/api/admin/create-case")
+async def create_case_alternative(request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Rota alternativa para criar caso - Ultra Simples"""
+    try:
+        print("🚀 ROTA ALTERNATIVA - CRIAR CASO")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Obter dados
+        data = await request.json()
+        print(f"📝 Dados: {data}")
+
+        client_id = data.get('client_id')
+        title = data.get('title', 'Novo Caso')
+        description = data.get('description', '')
+        status = data.get('status', 'pendente')
+
+        if not client_id:
+            raise HTTPException(status_code=400, detail="client_id obrigatório")
+
+        # Insert direto
+        query = "INSERT INTO client_cases (client_id, title, description, status, created_at) VALUES (:client_id, :title, :description, :status, NOW())"
+
+        result = db_session.execute(text(query), {
+            "client_id": client_id,
+            "title": title,
+            "description": description,
+            "status": status
+        })
+
+        db_session.commit()
+        case_id = result.lastrowid
+
+        print(f"✅ Caso {case_id} criado!")
+
+        return {
+            "data": {
+                "id": case_id,
+                "title": title,
+                "description": description,
+                "status": status,
+                "client_id": client_id
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO ALTERNATIVO: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
