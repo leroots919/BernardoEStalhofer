@@ -365,8 +365,10 @@ async def get_admin_clients(db_session=Depends(get_db), current_user=Depends(ver
         FROM users WHERE type = 'cliente'
         ORDER BY register_date DESC
         """
+        logger.info(f"🔍 Executando query: {query}")
         result = db_session.execute(text(query))
         clients = result.fetchall()
+        logger.info(f"🔍 Clientes encontrados na query: {len(clients)}")
 
         clients_list = []
         for client in clients:
