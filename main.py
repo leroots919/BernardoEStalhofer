@@ -809,7 +809,7 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
 @app.put("/api/admin/clients/{client_id}")
-async def update_client(client_id: int, client_data: dict, db_session=Depends(get_db), current_user=Depends(verify_token)):
+async def update_client(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Atualizar dados de um cliente (admin)"""
     try:
         logger.info(f"📝 Atualizando cliente ID: {client_id}")
@@ -817,6 +817,10 @@ async def update_client(client_id: int, client_data: dict, db_session=Depends(ge
         # Verificar se é admin
         if current_user.get('type') != 'admin':
             raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Obter dados do request
+        client_data = await request.json()
+        logger.info(f"📝 Dados recebidos: {client_data}")
 
         # Verificar se cliente existe
         check_query = "SELECT id FROM users WHERE id = :client_id AND type = 'cliente'"
@@ -874,6 +878,90 @@ async def update_client(client_id: int, client_data: dict, db_session=Depends(ge
         raise
     except Exception as e:
         logger.error(f"❌ Erro ao atualizar cliente: {e}")
+        db_session.rollback()
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.put("/api/admin/processes/{process_id}")
+async def update_process(process_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Atualizar dados de um processo/caso (admin)"""
+    try:
+        logger.info(f"📝 Atualizando processo ID: {process_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Obter dados do request
+        process_data = await request.json()
+        logger.info(f"📝 Dados do processo recebidos: {process_data}")
+
+        # Verificar se processo existe
+        check_query = "SELECT id FROM client_cases WHERE id = :process_id"
+        check_result = db_session.execute(text(check_query), {"process_id": process_id})
+        if not check_result.fetchone():
+            raise HTTPException(status_code=404, detail="Processo não encontrado")
+
+        # Preparar campos para atualização
+        update_fields = []
+        params = {"process_id": process_id}
+
+        if 'title' in process_data:
+            update_fields.append("title = :title")
+            params['title'] = process_data['title']
+
+        if 'description' in process_data:
+            update_fields.append("description = :description")
+            params['description'] = process_data['description']
+
+        if 'status' in process_data:
+            update_fields.append("status = :status")
+            params['status'] = process_data['status']
+
+        if 'service_id' in process_data:
+            update_fields.append("service_id = :service_id")
+            params['service_id'] = process_data['service_id']
+
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="Nenhum campo para atualizar")
+
+        # Executar atualização
+        update_query = f"UPDATE client_cases SET {', '.join(update_fields)} WHERE id = :process_id"
+        db_session.execute(text(update_query), params)
+        db_session.commit()
+
+        # Buscar processo atualizado
+        select_query = """
+        SELECT cc.id, cc.title, cc.description, cc.status, cc.created_at, cc.client_id, cc.service_id,
+               u.name as client_name, u.email as client_email,
+               s.name as service_name
+        FROM client_cases cc
+        LEFT JOIN users u ON cc.client_id = u.id
+        LEFT JOIN services s ON cc.service_id = s.id
+        WHERE cc.id = :process_id
+        """
+        result = db_session.execute(text(select_query), {"process_id": process_id})
+        updated_process = result.fetchone()
+
+        process_data = {
+            'id': updated_process.id,
+            'title': updated_process.title,
+            'description': updated_process.description,
+            'status': updated_process.status,
+            'created_at': updated_process.created_at.isoformat() if updated_process.created_at else None,
+            'client_id': updated_process.client_id,
+            'service_id': updated_process.service_id,
+            'client_name': updated_process.client_name,
+            'client_email': updated_process.client_email,
+            'service_name': updated_process.service_name
+        }
+
+        logger.info(f"✅ Processo {process_id} atualizado com sucesso")
+        return {"data": process_data}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar processo: {e}")
         db_session.rollback()
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
