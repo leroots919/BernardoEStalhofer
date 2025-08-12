@@ -282,21 +282,35 @@ async def get_clients(db_session=Depends(get_db), current_user=Depends(verify_to
 async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Buscar clientes por nome ou email"""
     try:
-        from models import UserType
+        print(f"🔍 Buscando clientes com termo: '{q}', limite: {limit}")
+        print(f"🔍 Termo de busca: '%{q}%'")
 
-        print(f"🔍 Buscando clientes com termo: '{q}'")
+        # Contar total de clientes primeiro
+        total_clients = db_session.query(Users).filter(Users.type == 'cliente').count()
+        print(f"👥 Total de clientes na base: {total_clients}")
 
-        # Buscar clientes que contenham o termo no nome ou email
-        clients = db_session.query(Users).filter(
-            Users.type == UserType.cliente,
-            (Users.name.ilike(f"%{q}%")) | (Users.email.ilike(f"%{q}%"))
-        ).limit(limit).all()
+        # Usar SQL raw para buscar clientes (sem created_at que não existe)
+        query = text("""
+        SELECT id, name, email, phone, cpf, register_date, type
+        FROM users
+        WHERE type = 'cliente'
+        AND (LOWER(name) LIKE LOWER(:search_term) OR LOWER(email) LIKE LOWER(:search_term))
+        ORDER BY name
+        LIMIT :limit
+        """)
+
+        result = db_session.execute(query, {
+            'search_term': f'%{q}%',
+            'limit': limit
+        })
+
+        clients = result.fetchall()
 
         print(f"✅ Encontrados {len(clients)} clientes:")
         for client in clients:
             print(f"  - ID: {client.id}, Nome: {client.name}, Email: {client.email}")
 
-        result = [
+        result_list = [
             {
                 "id": client.id,
                 "name": client.name,
@@ -307,8 +321,8 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
             for client in clients
         ]
 
-        print(f"📤 Retornando: {result}")
-        return result
+        print(f"📤 Retornando: {result_list}")
+        return result_list
 
     except Exception as e:
         print(f"❌ Erro ao buscar clientes: {str(e)}")
