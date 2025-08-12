@@ -89,7 +89,7 @@ const ProcessManagement = () => {
     } finally {
       setLoading(false);
     }
-  }, [currentPage, filters, clients.length]);
+  }, [currentPage, filters, clients.length, services.length]);
 
   useEffect(() => {
     fetchData();
