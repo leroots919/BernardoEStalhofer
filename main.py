@@ -8,7 +8,7 @@ from pathlib import Path
 # Adicionar o diretório src ao path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from fastapi import FastAPI, HTTPException, Depends, Header, Form
+from fastapi import FastAPI, HTTPException, Depends, Header, Form, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -17,6 +17,7 @@ import uvicorn
 from dotenv import load_dotenv
 from sqlalchemy import text, create_engine
 from sqlalchemy.orm import sessionmaker
+import logging
 
 # Carregar variáveis de ambiente
 load_dotenv()
@@ -29,6 +30,21 @@ app = FastAPI(
     docs_url="/docs",
     redoc_url="/redoc"
 )
+
+# Configurar logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Middleware para log de todas as requisições
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    logger.info(f"🔍 REQUEST: {request.method} {request.url}")
+    logger.info(f"🔍 Headers: {dict(request.headers)}")
+
+    response = await call_next(request)
+
+    logger.info(f"🔍 RESPONSE: {response.status_code}")
+    return response
 
 # Configurar CORS
 app.add_middleware(
@@ -71,6 +87,28 @@ class UserLogin(BaseModel):
 async def health_check():
     """Verificar se a API está funcionando"""
     return {"message": "FastAPI está funcionando!", "status": "ok", "version": "2.0.1", "timestamp": "2024-12-21 - FORCE REDEPLOY"}
+
+@app.get("/api/debug/routes")
+async def debug_routes():
+    """Listar todas as rotas disponíveis para debug"""
+    routes = []
+    for route in app.routes:
+        if hasattr(route, 'path') and hasattr(route, 'methods'):
+            routes.append({
+                "path": route.path,
+                "methods": list(route.methods),
+                "name": getattr(route, 'name', 'unknown')
+            })
+
+    logger.info(f"🔍 Total de rotas registradas: {len(routes)}")
+    for route in routes:
+        logger.info(f"   - {route['path']} [{', '.join(route['methods'])}]")
+
+    return {
+        "total_routes": len(routes),
+        "routes": routes,
+        "timestamp": "2024-12-21"
+    }
 
 @app.post("/api/auth/login")
 async def login(user_data: UserLogin, db_session=Depends(get_db)):
@@ -273,11 +311,15 @@ async def update_client_profile(profile_data: dict, db_session=Depends(get_db), 
 async def get_admin_clients(db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Listar todos os clientes (admin)"""
     try:
+        logger.info("🚀 ROTA /api/admin/clients CHAMADA!")
+        logger.info(f"🔍 Current user: {current_user}")
+
         # Verificar se é admin
         if current_user.get('type') != 'admin':
+            logger.error(f"❌ Acesso negado - usuário não é admin: {current_user}")
             raise HTTPException(status_code=403, detail="Acesso negado")
 
-        print("🔍 Buscando todos os clientes...")
+        logger.info("🔍 Buscando todos os clientes...")
 
         # Buscar todos os usuários do tipo cliente
         query = """
@@ -320,11 +362,15 @@ async def get_admin_clients(db_session=Depends(get_db), current_user=Depends(ver
 async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Listar todos os casos (admin)"""
     try:
+        logger.info("🚀 ROTA /api/admin/cases CHAMADA!")
+        logger.info(f"🔍 Current user: {current_user}")
+
         # Verificar se é admin
         if current_user.get('type') != 'admin':
+            logger.error(f"❌ Acesso negado - usuário não é admin: {current_user}")
             raise HTTPException(status_code=403, detail="Acesso negado")
 
-        print("🔍 Buscando todos os casos...")
+        logger.info("🔍 Buscando todos os casos...")
 
         # Buscar todos os casos com informações do cliente
         query = """
