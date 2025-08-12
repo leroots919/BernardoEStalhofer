@@ -812,91 +812,107 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
 
 @app.put("/api/admin/clients/{client_id}")
 async def update_client(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
-    """Atualizar dados de um cliente (admin)"""
+    """Atualizar dados de um cliente (admin) - Versão Simplificada"""
     try:
-        logger.info(f"📝 Atualizando cliente ID: {client_id}")
+        logger.info(f"🚀 INICIANDO UPDATE CLIENTE ID: {client_id}")
 
         # Verificar se é admin
         if current_user.get('type') != 'admin':
+            logger.error("❌ Usuário não é admin")
             raise HTTPException(status_code=403, detail="Acesso negado")
 
         # Obter dados do request
-        client_data = await request.json()
-        logger.info(f"📝 Dados recebidos: {client_data}")
+        try:
+            client_data = await request.json()
+            logger.info(f"✅ Dados JSON recebidos: {client_data}")
+        except Exception as json_error:
+            logger.error(f"❌ Erro ao parsear JSON: {json_error}")
+            raise HTTPException(status_code=400, detail="JSON inválido")
 
         # Verificar se cliente existe
-        check_query = "SELECT id FROM users WHERE id = :client_id AND type = 'cliente'"
-        check_result = db_session.execute(text(check_query), {"client_id": client_id})
-        if not check_result.fetchone():
-            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+        try:
+            check_query = "SELECT id, name, email FROM users WHERE id = %s AND type = 'cliente'"
+            check_result = db_session.execute(text(check_query), (client_id,))
+            existing_client = check_result.fetchone()
 
-        # Preparar campos para atualização
-        update_fields = []
-        params = {"client_id": client_id}
+            if not existing_client:
+                logger.error(f"❌ Cliente {client_id} não encontrado")
+                raise HTTPException(status_code=404, detail="Cliente não encontrado")
 
-        if 'name' in client_data:
-            update_fields.append("name = :name")
-            params['name'] = client_data['name']
+            logger.info(f"✅ Cliente encontrado: {existing_client.name}")
+        except Exception as check_error:
+            logger.error(f"❌ Erro ao verificar cliente: {check_error}")
+            raise HTTPException(status_code=500, detail="Erro ao verificar cliente")
 
-        if 'email' in client_data:
-            update_fields.append("email = :email")
-            params['email'] = client_data['email']
+        # Atualização simples e direta
+        try:
+            # Usar apenas os campos que vieram no request
+            if 'name' in client_data and client_data['name']:
+                update_name_query = "UPDATE users SET name = %s WHERE id = %s"
+                db_session.execute(text(update_name_query), (client_data['name'], client_id))
+                logger.info(f"✅ Nome atualizado para: {client_data['name']}")
 
-        if 'phone' in client_data:
-            update_fields.append("phone = :phone")
-            params['phone'] = client_data['phone']
+            if 'email' in client_data and client_data['email']:
+                update_email_query = "UPDATE users SET email = %s WHERE id = %s"
+                db_session.execute(text(update_email_query), (client_data['email'], client_id))
+                logger.info(f"✅ Email atualizado para: {client_data['email']}")
 
-        if 'cpf' in client_data:
-            update_fields.append("cpf = :cpf")
-            params['cpf'] = client_data['cpf']
+            if 'phone' in client_data:
+                update_phone_query = "UPDATE users SET phone = %s WHERE id = %s"
+                db_session.execute(text(update_phone_query), (client_data['phone'], client_id))
+                logger.info(f"✅ Telefone atualizado para: {client_data['phone']}")
 
-        if not update_fields:
-            raise HTTPException(status_code=400, detail="Nenhum campo para atualizar")
+            if 'cpf' in client_data:
+                update_cpf_query = "UPDATE users SET cpf = %s WHERE id = %s"
+                db_session.execute(text(update_cpf_query), (client_data['cpf'], client_id))
+                logger.info(f"✅ CPF atualizado para: {client_data['cpf']}")
 
-        # Executar atualização
-        update_query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = :client_id"
-        logger.info(f"📝 Query de atualização: {update_query}")
-        logger.info(f"📝 Parâmetros: {params}")
+            # Commit das mudanças
+            db_session.commit()
+            logger.info("✅ COMMIT realizado com sucesso")
 
-        db_session.execute(text(update_query), params)
-        db_session.commit()
-        logger.info("✅ Atualização executada com sucesso")
+        except Exception as update_error:
+            logger.error(f"❌ Erro durante UPDATE: {update_error}")
+            db_session.rollback()
+            raise HTTPException(status_code=500, detail=f"Erro ao atualizar: {str(update_error)}")
 
         # Buscar cliente atualizado
-        select_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = :client_id"
-        logger.info(f"📝 Buscando cliente atualizado...")
-        result = db_session.execute(text(select_query), {"client_id": client_id})
-        updated_client = result.fetchone()
+        try:
+            final_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = %s"
+            final_result = db_session.execute(text(final_query), (client_id,))
+            updated_client = final_result.fetchone()
 
-        if not updated_client:
-            logger.error("❌ Cliente não encontrado após atualização")
-            raise HTTPException(status_code=404, detail="Cliente não encontrado após atualização")
+            if not updated_client:
+                logger.error("❌ Cliente não encontrado após atualização")
+                raise HTTPException(status_code=404, detail="Cliente não encontrado após atualização")
 
-        logger.info(f"✅ Cliente encontrado: {updated_client.name}")
+            response_data = {
+                'id': updated_client.id,
+                'name': updated_client.name or '',
+                'email': updated_client.email or '',
+                'phone': updated_client.phone or '',
+                'cpf': updated_client.cpf or '',
+                'created_at': updated_client.created_at.isoformat() if updated_client.created_at else None,
+                'type': updated_client.type or 'cliente'
+            }
 
-        client_response = {
-            'id': updated_client.id,
-            'name': updated_client.name or '',
-            'email': updated_client.email or '',
-            'phone': updated_client.phone or '',
-            'cpf': updated_client.cpf or '',
-            'created_at': updated_client.created_at.isoformat() if updated_client.created_at else None,
-            'type': updated_client.type or 'cliente'
-        }
+            logger.info(f"✅ SUCESSO! Cliente {client_id} atualizado")
+            return {"data": response_data}
 
-        logger.info(f"✅ Resposta preparada: {client_response}")
-
-        logger.info(f"✅ Cliente {client_id} atualizado com sucesso")
-        return {"data": client_response}
+        except Exception as final_error:
+            logger.error(f"❌ Erro ao buscar cliente final: {final_error}")
+            raise HTTPException(status_code=500, detail=f"Erro ao buscar resultado: {str(final_error)}")
 
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"❌ Erro ao atualizar cliente: {e}")
-        logger.error(f"❌ Tipo do erro: {type(e)}")
-        logger.error(f"❌ Args do erro: {e.args}")
-        db_session.rollback()
-        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
+        logger.error(f"❌ ERRO GERAL: {e}")
+        logger.error(f"❌ TIPO: {type(e)}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=f"Erro geral: {str(e)}")
 
 @app.put("/api/admin/processes/{process_id}")
 async def update_process(process_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
