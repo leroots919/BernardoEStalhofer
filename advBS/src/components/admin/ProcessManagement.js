@@ -138,17 +138,15 @@ const ProcessManagement = () => {
     console.log('🔍 Editando processo:', process);
     console.log('📋 Serviços disponíveis:', services.length, services);
 
-    // Garantir que os serviços estejam carregados
-    if (services.length === 0) {
-      console.log('🔄 Carregando serviços para o modal...');
-      try {
-        const servicesResponse = await adminService.get('/api/services');
-        const servicesData = servicesResponse?.data?.data || servicesResponse?.data || [];
-        console.log('📋 Serviços carregados para modal:', servicesData.length);
-        setServices(servicesData);
-      } catch (error) {
-        console.error('❌ Erro ao carregar serviços:', error);
-      }
+    // SEMPRE carregar serviços quando abrir modal (para debug)
+    console.log('🔄 FORÇANDO carregamento de serviços...');
+    try {
+      const servicesResponse = await adminService.get('/api/services');
+      const servicesData = servicesResponse?.data?.data || servicesResponse?.data || [];
+      console.log('📋 Serviços carregados para modal:', servicesData.length, servicesData);
+      setServices(servicesData);
+    } catch (error) {
+      console.error('❌ Erro ao carregar serviços:', error);
     }
 
     setEditingProcess({
@@ -418,6 +416,16 @@ const ProcessManagement = () => {
                 className="form-input"
               />
             </div>
+
+            {/* DEBUG VISUAL */}
+            <div style={{background: '#ffeb3b', padding: '10px', margin: '10px 0', border: '2px solid red'}}>
+              <strong>🔍 DEBUG CAMPO TIPO DE SERVIÇO:</strong><br/>
+              - Services length: {services.length}<br/>
+              - Services data: {JSON.stringify(services.slice(0, 2))}<br/>
+              - EditingProcess: {JSON.stringify(editingProcess)}<br/>
+              - ShowEditModal: {showEditModal ? 'true' : 'false'}
+            </div>
+
             <div className="form-group">
               <label>Tipo de Serviço:</label>
               <select
