@@ -1,1 +1,1 @@
-web: cd advBS-backend && python simple_server.py
+web: python main.py
