@@ -64,7 +64,13 @@ DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = os.getenv("DB_PORT", "3306")
 DB_USER = os.getenv("DB_USER", "root")
 DB_PASSWORD = os.getenv("DB_PASSWORD", "")
-DB_NAME = os.getenv("DB_NAME", "BS")
+# Forçar uso do banco railway em produção
+if 'railway' in os.getenv('DB_HOST', ''):
+    DB_NAME = 'railway'  # Forçar banco railway
+    logger.info("🚀 PRODUÇÃO: Usando banco 'railway'")
+else:
+    DB_NAME = os.getenv("DB_NAME", "BS")  # Local usa BS
+    logger.info("🏠 LOCAL: Usando banco 'BS'")
 
 DATABASE_URL = f"mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 print(f"🔗 Conectando ao banco: {DB_HOST}:{DB_PORT}/{DB_NAME}")
