@@ -407,7 +407,7 @@ const ProcessManagement = () => {
       {/* Modal de Edição */}
       {showEditModal && (
         <div className="modal-overlay">
-          <div className="modal-content">
+          <div className="modal-content" key={`edit-modal-${editingProcess?.id}-${Date.now()}`}>
             <h3>Editar Processo</h3>
             <div className="form-group">
               <label>Descrição:</label>

@@ -781,11 +781,21 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
         search_term = f"%{q}%"
         logger.info(f"🔍 Termo de busca: '{search_term}'")
 
+        # Primeiro verificar se há clientes
+        count_query = "SELECT COUNT(*) as total FROM users WHERE type = 'cliente'"
+        count_result = db_session.execute(text(count_query))
+        total_clients = count_result.fetchone().total
+        logger.info(f"👥 Total de clientes na base: {total_clients}")
+
+        if total_clients == 0:
+            logger.info("👥 Nenhum cliente encontrado, retornando lista vazia")
+            return {"data": []}
+
         query = """
         SELECT id, name, email, phone, cpf, created_at, type
         FROM users
         WHERE type = 'cliente'
-        AND (name LIKE :search_term OR email LIKE :search_term)
+        AND (LOWER(name) LIKE LOWER(:search_term) OR LOWER(email) LIKE LOWER(:search_term))
         ORDER BY name
         LIMIT :limit
         """
