@@ -391,6 +391,20 @@ async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verif
 
         logger.info("🔍 Buscando todos os casos...")
 
+        # Primeiro, vamos verificar se as tabelas existem
+        try:
+            logger.info("🔍 Verificando se tabela client_cases existe...")
+            check_table = "SHOW TABLES LIKE 'client_cases'"
+            table_result = db_session.execute(text(check_table))
+            table_exists = table_result.fetchone()
+            logger.info(f"🔍 Tabela client_cases existe: {table_exists}")
+
+            if not table_exists:
+                logger.warning("⚠️ Tabela client_cases não existe - retornando lista vazia")
+                return {"data": []}
+        except Exception as table_error:
+            logger.error(f"❌ Erro ao verificar tabela: {table_error}")
+
         # Buscar todos os casos com informações do cliente
         query = """
         SELECT cc.id, cc.user_id, cc.service_id, cc.title, cc.description,
@@ -400,6 +414,7 @@ async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verif
         LEFT JOIN users u ON cc.user_id = u.id
         ORDER BY cc.created_at DESC
         """
+        logger.info(f"🔍 Executando query: {query}")
         result = db_session.execute(text(query))
         cases = result.fetchall()
 
