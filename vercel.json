@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd advBS && npm install && npm run build",
+  "outputDirectory": "advBS/build",
+  "installCommand": "cd advBS && npm install",
+  "devCommand": "cd advBS && npm start",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
