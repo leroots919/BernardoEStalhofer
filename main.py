@@ -463,13 +463,15 @@ async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verif
         except Exception as table_error:
             logger.error(f"❌ Erro ao verificar tabela: {table_error}")
 
-        # Buscar todos os casos com informações do cliente
+        # Buscar todos os casos com informações do cliente E serviço
         query = """
         SELECT cc.id, cc.user_id, cc.service_id, cc.title, cc.description,
                cc.status, cc.created_at, cc.updated_at,
-               u.name as client_name, u.email as client_email
+               u.name as client_name, u.email as client_email,
+               s.name as service_name
         FROM client_cases cc
         LEFT JOIN users u ON cc.user_id = u.id
+        LEFT JOIN services s ON cc.service_id = s.id
         ORDER BY cc.created_at DESC
         """
         logger.info(f"🔍 Executando query: {query}")
@@ -488,7 +490,8 @@ async def get_admin_cases(db_session=Depends(get_db), current_user=Depends(verif
                 'created_at': case.created_at.isoformat() if case.created_at else None,
                 'updated_at': case.updated_at.isoformat() if case.updated_at else None,
                 'client_name': case.client_name,
-                'client_email': case.client_email
+                'client_email': case.client_email,
+                'service_name': case.service_name  # ADICIONADO: nome do serviço
             })
 
         print(f"✅ {len(cases_list)} casos encontrados")

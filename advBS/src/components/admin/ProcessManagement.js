@@ -256,6 +256,7 @@ const ProcessManagement = () => {
               <tr>
                 <th>NOME</th>
                 <th>DESCRIÇÃO</th>
+                <th>TIPO DE SERVIÇO</th>
                 <th>EMAIL</th>
                 <th>STATUS</th>
                 <th>DATA DE CADASTRO</th>
@@ -266,7 +267,7 @@ const ProcessManagement = () => {
             <tbody>
               {processes.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="no-data-row">
+                  <td colSpan="8" className="no-data-row">
                     Nenhum processo encontrado
                   </td>
                 </tr>
@@ -285,6 +286,9 @@ const ProcessManagement = () => {
                     </td>
                     <td className="description-cell">
                       {process.description || 'Sem descrição'}
+                    </td>
+                    <td className="service-cell">
+                      {process.service_name || 'Não informado'}
                     </td>
                     <td className="email-cell">
                       {process.client_email || 'Não informado'}
