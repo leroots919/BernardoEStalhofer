@@ -1,0 +1,565 @@
+{
+  "database": "BS",
+  "export_date": "2025-08-11T20:54:30.408937",
+  "tables": {
+    "client_cases": {
+      "columns": [
+        "id",
+        "user_id",
+        "service_id",
+        "title",
+        "description",
+        "status",
+        "created_at",
+        "updated_at"
+      ],
+      "data": [
+        {
+          "id": 1,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Recurso de Multa por Velocidade",
+          "description": "Teste",
+          "status": "concluido",
+          "created_at": "2025-06-07T22:33:40",
+          "updated_at": "2025-08-09T22:24:12"
+        },
+        {
+          "id": 2,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Defesa de Suspensão de CNH",
+          "description": "Cliente está com processo de suspensão de CNH por pontuação. Preparando defesa.",
+          "status": "pendente",
+          "created_at": "2025-06-07T22:33:40",
+          "updated_at": "2025-06-07T22:33:40"
+        },
+        {
+          "id": 3,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Recurso de Multa por Estacionamento",
+          "description": "Multa por estacionamento em local proibido. Caso já finalizado com sucesso.",
+          "status": "concluido",
+          "created_at": "2025-06-07T22:33:40",
+          "updated_at": "2025-06-07T22:33:40"
+        },
+        {
+          "id": 4,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Teste",
+          "description": "Teste",
+          "status": "pendente",
+          "created_at": "2025-06-08T01:12:25",
+          "updated_at": "2025-06-08T01:12:25"
+        },
+        {
+          "id": 5,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Processo de Suspensão de CNH",
+          "description": "Cliente com CNH suspensa por excesso de pontos. Necessário recurso administrativo.",
+          "status": "pendente",
+          "created_at": "2025-06-08T01:41:14",
+          "updated_at": "2025-06-08T01:41:14"
+        },
+        {
+          "id": 6,
+          "user_id": 9,
+          "service_id": 1,
+          "title": "Recurso de Multa - Vanessa",
+          "description": "Contestação de multa por excesso de velocidade. Cliente recebeu multa indevida e solicita recurso administrativo.",
+          "status": "pendente",
+          "created_at": "2025-06-08T01:51:13",
+          "updated_at": "2025-06-08T01:51:13"
+        },
+        {
+          "id": 7,
+          "user_id": 9,
+          "service_id": 1,
+          "title": "Teste FastAPI",
+          "description": "Teste via FastAPI",
+          "status": "pendente",
+          "created_at": "2025-06-08T02:28:27",
+          "updated_at": "2025-06-08T02:28:27"
+        },
+        {
+          "id": 8,
+          "user_id": 9,
+          "service_id": 1,
+          "title": "teste",
+          "description": "teste",
+          "status": "em_andamento",
+          "created_at": "2025-06-08T02:57:15",
+          "updated_at": "2025-06-08T02:57:15"
+        },
+        {
+          "id": 9,
+          "user_id": 9,
+          "service_id": 1,
+          "title": "teste2",
+          "description": "teste2",
+          "status": "em_andamento",
+          "created_at": "2025-06-08T02:57:34",
+          "updated_at": "2025-06-08T02:57:34"
+        },
+        {
+          "id": 10,
+          "user_id": 9,
+          "service_id": 1,
+          "title": "Recurso de Multa - Vanessa",
+          "description": "Contestação de multa por excesso de velocidade. Cliente recebeu multa indevida e solicita recurso administrativo.",
+          "status": "pendente",
+          "created_at": "2025-06-09T03:17:59",
+          "updated_at": "2025-06-09T03:17:59"
+        },
+        {
+          "id": 11,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Teste de Caso",
+          "description": "Teste",
+          "status": "pendente",
+          "created_at": "2025-06-09T16:03:43",
+          "updated_at": "2025-06-09T16:03:43"
+        },
+        {
+          "id": 12,
+          "user_id": 2,
+          "service_id": 1,
+          "title": "Teste 2",
+          "description": "Teste 2",
+          "status": "pendente",
+          "created_at": "2025-06-09T16:06:32",
+          "updated_at": "2025-06-09T16:06:32"
+        },
+        {
+          "id": 13,
+          "user_id": 2,
+          "service_id": 2,
+          "title": "acidente",
+          "description": "fgdkfdlkg",
+          "status": "em_andamento",
+          "created_at": "2025-08-09T16:55:56",
+          "updated_at": "2025-08-09T16:55:56"
+        }
+      ],
+      "count": 13
+    },
+    "consultations": {
+      "columns": [
+        "id",
+        "user_id",
+        "service_id",
+        "scheduled_date",
+        "status",
+        "notes",
+        "created_at"
+      ],
+      "data": [],
+      "count": 0
+    },
+    "favorites": {
+      "columns": [
+        "user_id",
+        "service_id"
+      ],
+      "data": [],
+      "count": 0
+    },
+    "process_files": {
+      "columns": [
+        "id",
+        "user_id",
+        "case_id",
+        "filename",
+        "original_filename",
+        "file_path",
+        "description",
+        "uploaded_by_admin",
+        "created_at"
+      ],
+      "data": [
+        {
+          "id": 1,
+          "user_id": 9,
+          "case_id": null,
+          "filename": "531d6faf-a089-4ba4-9c47-154086bd8f28.txt",
+          "original_filename": "teste.txt",
+          "file_path": "C:\\Users\\Usuario\\Desktop\\BernardoEStalhofer\\advBS-backend\\poker_academy_api\\uploads\\documents\\531d6faf-a089-4ba4-9c47-154086bd8f28.txt",
+          "description": "Teste de upload via script",
+          "uploaded_by_admin": 1,
+          "created_at": "2025-06-08T00:54:51"
+        },
+        {
+          "id": 2,
+          "user_id": 9,
+          "case_id": 6,
+          "filename": "9bad66ae-604e-4275-b74c-b5ddd9998aa5.png",
+          "original_filename": "ATs FT.png",
+          "file_path": "C:\\Users\\Usuario\\Desktop\\BernardoEStalhofer\\advBS-backend\\poker_academy_api\\uploads\\documents\\9bad66ae-604e-4275-b74c-b5ddd9998aa5.png",
+          "description": "ta ai2",
+          "uploaded_by_admin": 1,
+          "created_at": "2025-06-08T00:56:05"
+        },
+        {
+          "id": 3,
+          "user_id": 9,
+          "case_id": 10,
+          "filename": "036e2de6-a524-412b-976a-6d6dc3107905.png",
+          "original_filename": "AQo do big.png",
+          "file_path": "C:\\Users\\Usuario\\Desktop\\BernardoEStalhofer\\advBS-backend\\poker_academy_api\\uploads\\documents\\036e2de6-a524-412b-976a-6d6dc3107905.png",
+          "description": "teste69969578",
+          "uploaded_by_admin": 1,
+          "created_at": "2025-08-09T13:55:11"
+        }
+      ],
+      "count": 3
+    },
+    "processfiles": {
+      "columns": [
+        "id",
+        "original_filename",
+        "stored_filename",
+        "file_path",
+        "file_size",
+        "description",
+        "user_id",
+        "case_id",
+        "created_at",
+        "updated_at"
+      ],
+      "data": [],
+      "count": 0
+    },
+    "service_views": {
+      "columns": [
+        "id",
+        "user_id",
+        "service_id",
+        "viewed_at",
+        "ip_address",
+        "user_agent"
+      ],
+      "data": [],
+      "count": 0
+    },
+    "services": {
+      "columns": [
+        "id",
+        "name",
+        "description",
+        "category",
+        "price",
+        "duration_days",
+        "active",
+        "created_at"
+      ],
+      "data": [
+        {
+          "id": 1,
+          "name": "Recurso de Multa",
+          "description": "Contestação de multas de trânsito indevidas com base na legislação vigente.",
+          "category": "multas",
+          "price": 150.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:22:37"
+        },
+        {
+          "id": 2,
+          "name": "Defesa CNH - Suspensão",
+          "description": "Defesa contra suspensão da CNH por pontuação ou infrações graves.",
+          "category": "cnh",
+          "price": 300.0,
+          "duration_days": 45,
+          "active": 1,
+          "created_at": "2025-06-07T15:22:37"
+        },
+        {
+          "id": 3,
+          "name": "Assessoria em Acidentes",
+          "description": "Orientação jurídica completa em casos de acidentes de trânsito.",
+          "category": "acidentes",
+          "price": 250.0,
+          "duration_days": 60,
+          "active": 1,
+          "created_at": "2025-06-07T15:22:37"
+        },
+        {
+          "id": 4,
+          "name": "Consultoria Jurídica",
+          "description": "Consultoria especializada em direito de trânsito.",
+          "category": "consultoria",
+          "price": 100.0,
+          "duration_days": 7,
+          "active": 1,
+          "created_at": "2025-06-07T15:22:37"
+        },
+        {
+          "id": 5,
+          "name": "Recurso Administrativo",
+          "description": "Defesa em processos administrativos junto aos órgãos de trânsito.",
+          "category": "recursos",
+          "price": 200.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:22:37"
+        },
+        {
+          "id": 6,
+          "name": "Recurso de Multa",
+          "description": "Contestação de multas de trânsito indevidas com base na legislação vigente.",
+          "category": "multas",
+          "price": 150.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:43:50"
+        },
+        {
+          "id": 7,
+          "name": "Defesa CNH - Suspensão",
+          "description": "Defesa contra suspensão da CNH por pontuação ou infrações graves.",
+          "category": "cnh",
+          "price": 300.0,
+          "duration_days": 45,
+          "active": 1,
+          "created_at": "2025-06-07T15:43:50"
+        },
+        {
+          "id": 8,
+          "name": "Assessoria em Acidentes",
+          "description": "Orientação jurídica completa em casos de acidentes de trânsito.",
+          "category": "acidentes",
+          "price": 250.0,
+          "duration_days": 60,
+          "active": 1,
+          "created_at": "2025-06-07T15:43:50"
+        },
+        {
+          "id": 9,
+          "name": "Consultoria Jurídica",
+          "description": "Consultoria especializada em direito de trânsito.",
+          "category": "consultoria",
+          "price": 100.0,
+          "duration_days": 7,
+          "active": 1,
+          "created_at": "2025-06-07T15:43:50"
+        },
+        {
+          "id": 10,
+          "name": "Recurso Administrativo",
+          "description": "Defesa em processos administrativos junto aos órgãos de trânsito.",
+          "category": "recursos",
+          "price": 200.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:43:50"
+        },
+        {
+          "id": 11,
+          "name": "Recurso de Multa",
+          "description": "Contestação de multas de trânsito indevidas com base na legislação vigente.",
+          "category": "multas",
+          "price": 150.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:58:18"
+        },
+        {
+          "id": 12,
+          "name": "Defesa CNH - Suspensão",
+          "description": "Defesa contra suspensão da CNH por pontuação ou infrações graves.",
+          "category": "cnh",
+          "price": 300.0,
+          "duration_days": 45,
+          "active": 1,
+          "created_at": "2025-06-07T15:58:18"
+        },
+        {
+          "id": 13,
+          "name": "Assessoria em Acidentes",
+          "description": "Orientação jurídica completa em casos de acidentes de trânsito.",
+          "category": "acidentes",
+          "price": 250.0,
+          "duration_days": 60,
+          "active": 1,
+          "created_at": "2025-06-07T15:58:18"
+        },
+        {
+          "id": 14,
+          "name": "Consultoria Jurídica",
+          "description": "Consultoria especializada em direito de trânsito.",
+          "category": "consultoria",
+          "price": 100.0,
+          "duration_days": 7,
+          "active": 1,
+          "created_at": "2025-06-07T15:58:18"
+        },
+        {
+          "id": 15,
+          "name": "Recurso Administrativo",
+          "description": "Defesa em processos administrativos junto aos órgãos de trânsito.",
+          "category": "recursos",
+          "price": 200.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T15:58:18"
+        },
+        {
+          "id": 16,
+          "name": "Recurso de Multa",
+          "description": "Contestação de multas de trânsito indevidas com base na legislação vigente.",
+          "category": "multas",
+          "price": 150.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T18:56:09"
+        },
+        {
+          "id": 17,
+          "name": "Defesa CNH - Suspensão",
+          "description": "Defesa contra suspensão da CNH por pontuação ou infrações graves.",
+          "category": "cnh",
+          "price": 300.0,
+          "duration_days": 45,
+          "active": 1,
+          "created_at": "2025-06-07T18:56:09"
+        },
+        {
+          "id": 18,
+          "name": "Assessoria em Acidentes",
+          "description": "Orientação jurídica completa em casos de acidentes de trânsito.",
+          "category": "acidentes",
+          "price": 250.0,
+          "duration_days": 60,
+          "active": 1,
+          "created_at": "2025-06-07T18:56:09"
+        },
+        {
+          "id": 19,
+          "name": "Consultoria Jurídica",
+          "description": "Consultoria especializada em direito de trânsito.",
+          "category": "consultoria",
+          "price": 100.0,
+          "duration_days": 7,
+          "active": 1,
+          "created_at": "2025-06-07T18:56:09"
+        },
+        {
+          "id": 20,
+          "name": "Recurso Administrativo",
+          "description": "Defesa em processos administrativos junto aos órgãos de trânsito.",
+          "category": "recursos",
+          "price": 200.0,
+          "duration_days": 30,
+          "active": 1,
+          "created_at": "2025-06-07T18:56:09"
+        }
+      ],
+      "count": 20
+    },
+    "users": {
+      "columns": [
+        "id",
+        "name",
+        "username",
+        "email",
+        "password_hash",
+        "type",
+        "register_date",
+        "last_login",
+        "cpf",
+        "phone",
+        "address",
+        "city",
+        "state",
+        "zip_code"
+      ],
+      "data": [
+        {
+          "id": 1,
+          "name": "Administrador",
+          "username": "admin",
+          "email": "admin@advtransito.com",
+          "password_hash": "pbkdf2:sha256:260000$CdJd0dG4f1KGyNCO$5e6e974c70b8fe059a8b551644059055db451306ac2a67ad8f71fbc1e32d48da",
+          "type": "admin",
+          "register_date": "2025-06-07T15:22:37",
+          "last_login": "2025-06-08T02:02:37",
+          "cpf": null,
+          "phone": null,
+          "address": null,
+          "city": null,
+          "state": null,
+          "zip_code": null
+        },
+        {
+          "id": 2,
+          "name": "Cliente Teste1",
+          "username": "cliente",
+          "email": "cliente@teste.com1",
+          "password_hash": "pbkdf2:sha256:260000$cR3gOF9dfmfxJM1m$273ac433d9edd5aaf5ca86246ab38872f5287caeb99dec2efc547b8268faef02",
+          "type": "cliente",
+          "register_date": "2025-06-07T15:22:37",
+          "last_login": null,
+          "cpf": "564654",
+          "phone": "4564565",
+          "address": "",
+          "city": null,
+          "state": null,
+          "zip_code": null
+        },
+        {
+          "id": 9,
+          "name": "vanessa",
+          "username": null,
+          "email": "vanessafk007@gmail.com",
+          "password_hash": "pbkdf2:sha256:260000$Qg3M82s35QWNxLUa$3e723c8c6a77a140464b7afa011af47ddf3d3be4ed94ff885f26607222122d04",
+          "type": "cliente",
+          "register_date": "2025-06-07T22:53:54",
+          "last_login": null,
+          "cpf": "00271434066",
+          "phone": "51999887766",
+          "address": "Rua Teste, 123",
+          "city": "Porto Alegre",
+          "state": "RS",
+          "zip_code": "90000-000"
+        },
+        {
+          "id": 11,
+          "name": "Administrador",
+          "username": null,
+          "email": "admin@admin.com",
+          "password_hash": "pbkdf2:sha256:260000$AFXq1z0pAMlMxNbS$8516e823141ce9fd011424bb254d25ea60a0eaee2104ac89bde0dd5a3b879182",
+          "type": "admin",
+          "register_date": "2025-08-09T17:53:15",
+          "last_login": null,
+          "cpf": null,
+          "phone": null,
+          "address": null,
+          "city": null,
+          "state": null,
+          "zip_code": null
+        },
+        {
+          "id": 12,
+          "name": "Administrador",
+          "username": null,
+          "email": "admin@advbs.com",
+          "password_hash": "pbkdf2:sha256:260000$8U4DM4XugUVi995z$22ba36071c44614a96ef081141bcb81fbdb9a42f2ab9b38e0921c5cb112d6c5a",
+          "type": "admin",
+          "register_date": "2025-08-11T20:50:41",
+          "last_login": null,
+          "cpf": null,
+          "phone": null,
+          "address": null,
+          "city": null,
+          "state": null,
+          "zip_code": null
+        }
+      ],
+      "count": 5
+    }
+  }
+}

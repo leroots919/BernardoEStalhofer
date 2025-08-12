@@ -78,14 +78,30 @@ async def login(user_data: UserLogin, db_session=Depends(get_db)):
     try:
         print(f"🔐 Tentativa de login: {user_data.email}")
 
-        # Buscar usuário por email usando SQL direto
-        query = "SELECT id, name, email, password_hash, type FROM users WHERE email = %s"
-        result = db_session.execute(text(query), (user_data.email,))
+        # Buscar usuário por email OU username usando SQL direto
+        query = "SELECT id, name, email, password_hash, type FROM users WHERE email = %s OR username = %s"
+        result = db_session.execute(text(query), (user_data.email, user_data.email))
         user = result.fetchone()
 
         if not user:
             print(f"❌ Usuário não encontrado: {user_data.email}")
-            raise HTTPException(status_code=401, detail="Credenciais inválidas")
+            # Se for 'admin', criar usuário admin automaticamente
+            if user_data.email == 'admin' and user_data.password == 'admin123':
+                print("🔧 Criando usuário admin automaticamente...")
+                from werkzeug.security import generate_password_hash
+                admin_hash = generate_password_hash('admin123')
+
+                insert_query = "INSERT INTO users (name, username, email, password_hash, type, register_date) VALUES (%s, %s, %s, %s, %s, NOW())"
+                db_session.execute(text(insert_query), ("Administrador", "admin", "admin@advbs.com", admin_hash, "admin"))
+                db_session.commit()
+
+                # Buscar o usuário recém-criado
+                result = db_session.execute(text(query), (user_data.email, user_data.email))
+                user = result.fetchone()
+                print("✅ Usuário admin criado automaticamente!")
+
+            if not user:
+                raise HTTPException(status_code=401, detail="Credenciais inválidas")
 
         # Verificar senha hasheada
         from werkzeug.security import check_password_hash

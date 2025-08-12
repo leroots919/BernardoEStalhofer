@@ -2,7 +2,9 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import { setApiToken, getToken } from '../services/api';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = process.env.NODE_ENV === 'production'
+  ? 'https://bernardoestalhofer-production.up.railway.app'
+  : 'http://localhost:8000';
 
 // Criando o contexto de autenticação
 export const AuthContext = createContext();
