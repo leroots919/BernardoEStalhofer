@@ -132,8 +132,8 @@ async def login(user_data: UserLogin, db_session=Depends(get_db)):
         logger.info(f"🔍 DB Config: {DB_HOST}:{DB_PORT}/{DB_NAME}")
 
         # Buscar usuário por email OU username usando SQL direto
-        query = "SELECT id, name, email, password_hash, type FROM users WHERE email = %s OR username = %s"
-        result = db_session.execute(text(query), (user_data.email, user_data.email))
+        query = "SELECT id, name, email, password_hash, type FROM users WHERE email = :email OR username = :username"
+        result = db_session.execute(text(query), {"email": user_data.email, "username": user_data.email})
         user = result.fetchone()
 
         if not user:
@@ -144,12 +144,12 @@ async def login(user_data: UserLogin, db_session=Depends(get_db)):
                 from werkzeug.security import generate_password_hash
                 admin_hash = generate_password_hash('admin123')
 
-                insert_query = "INSERT INTO users (name, username, email, password_hash, type, register_date) VALUES (%s, %s, %s, %s, %s, NOW())"
-                db_session.execute(text(insert_query), ("Administrador", "admin", "admin@advbs.com", admin_hash, "admin"))
+                insert_query = "INSERT INTO users (name, username, email, password_hash, type, register_date) VALUES (:name, :username, :email, :password_hash, :type, NOW())"
+                db_session.execute(text(insert_query), {"name": "Administrador", "username": "admin", "email": "admin@advbs.com", "password_hash": admin_hash, "type": "admin"})
                 db_session.commit()
 
                 # Buscar o usuário recém-criado
-                result = db_session.execute(text(query), (user_data.email, user_data.email))
+                result = db_session.execute(text(query), {"email": user_data.email, "username": user_data.email})
                 user = result.fetchone()
                 print("✅ Usuário admin criado automaticamente!")
 
@@ -248,11 +248,11 @@ async def get_client_profile(db_session=Depends(get_db), current_user=Depends(ve
 
         # Buscar dados completos do usuário usando SQL direto
         query = """
-        SELECT id, name, email, cpf, phone, address, city, state, zip_code, 
-               register_date, last_login, type 
-        FROM users WHERE id = %s
+        SELECT id, name, email, cpf, phone, address, city, state, zip_code,
+               register_date, last_login, type
+        FROM users WHERE id = :user_id
         """
-        result = db_session.execute(text(query), (current_user.get('user_id'),))
+        result = db_session.execute(text(query), {"user_id": current_user.get('user_id')})
         user = result.fetchone()
 
         if not user:
@@ -291,8 +291,8 @@ async def update_client_profile(profile_data: dict, db_session=Depends(get_db), 
 
         # Verificar se email já existe em outro usuário
         if profile_data.get("email"):
-            query = "SELECT id FROM users WHERE email = %s AND id != %s"
-            result = db_session.execute(text(query), (profile_data["email"], current_user.get('user_id')))
+            query = "SELECT id FROM users WHERE email = :email AND id != :user_id"
+            result = db_session.execute(text(query), {"email": profile_data["email"], "user_id": current_user.get('user_id')})
             existing_user = result.fetchone()
             if existing_user:
                 raise HTTPException(status_code=409, detail="Email já cadastrado")
@@ -301,15 +301,16 @@ async def update_client_profile(profile_data: dict, db_session=Depends(get_db), 
         update_fields = []
         update_values = []
         
+        update_params = {}
         for field in ['name', 'email', 'cpf', 'phone', 'address', 'city', 'state', 'zip_code']:
             if field in profile_data:
-                update_fields.append(f"{field} = %s")
-                update_values.append(profile_data[field])
-        
+                update_fields.append(f"{field} = :{field}")
+                update_params[field] = profile_data[field]
+
         if update_fields:
-            update_values.append(current_user.get('user_id'))
-            query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = %s"
-            db_session.execute(text(query), update_values)
+            update_params['user_id'] = current_user.get('user_id')
+            query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = :user_id"
+            db_session.execute(text(query), update_params)
             db_session.commit()
 
         print(f"✅ Perfil atualizado com sucesso!")
@@ -474,10 +475,10 @@ async def get_client_cases(db_session=Depends(get_db), current_user=Depends(veri
                s.name as service_name
         FROM client_cases cc
         LEFT JOIN services s ON cc.service_id = s.id
-        WHERE cc.user_id = %s
+        WHERE cc.user_id = :user_id
         ORDER BY cc.created_at DESC
         """
-        result = db_session.execute(text(query), (user_id,))
+        result = db_session.execute(text(query), {"user_id": user_id})
         cases = result.fetchall()
 
         cases_list = []
@@ -515,14 +516,14 @@ async def get_client_stats(db_session=Depends(get_db), current_user=Depends(veri
             SUM(CASE WHEN status = 'em_andamento' THEN 1 ELSE 0 END) as active_cases,
             SUM(CASE WHEN status = 'concluido' THEN 1 ELSE 0 END) as completed_cases
         FROM client_cases
-        WHERE user_id = %s
+        WHERE user_id = :user_id
         """
-        result = db_session.execute(text(query), (user_id,))
+        result = db_session.execute(text(query), {"user_id": user_id})
         stats = result.fetchone()
 
         # Contar arquivos
-        files_query = "SELECT COUNT(*) as total_files FROM process_files WHERE user_id = %s"
-        files_result = db_session.execute(text(files_query), (user_id,))
+        files_query = "SELECT COUNT(*) as total_files FROM process_files WHERE user_id = :user_id"
+        files_result = db_session.execute(text(files_query), {"user_id": user_id})
         files_count = files_result.fetchone()
 
         stats_data = {
@@ -556,10 +557,10 @@ async def get_admin_client_cases(client_id: int, db_session=Depends(get_db), cur
                s.name as service_name
         FROM client_cases cc
         LEFT JOIN services s ON cc.service_id = s.id
-        WHERE cc.user_id = %s
+        WHERE cc.user_id = :client_id
         ORDER BY cc.created_at DESC
         """
-        result = db_session.execute(text(query), (client_id,))
+        result = db_session.execute(text(query), {"client_id": client_id})
         cases = result.fetchall()
 
         cases_list = []
