@@ -450,7 +450,7 @@ async def get_services(db_session=Depends(get_db)):
 
         # Buscar todos os serviços
         query = """
-        SELECT id, name, description, price, category, created_at, updated_at
+        SELECT id, name, description, price, created_at
         FROM services
         ORDER BY name
         """
@@ -464,9 +464,7 @@ async def get_services(db_session=Depends(get_db)):
                 'name': service.name,
                 'description': service.description,
                 'price': float(service.price) if service.price else 0.0,
-                'category': service.category,
-                'created_at': service.created_at.isoformat() if service.created_at else None,
-                'updated_at': service.updated_at.isoformat() if service.updated_at else None
+                'created_at': service.created_at.isoformat() if service.created_at else None
             })
 
         print(f"✅ {len(services_list)} serviços encontrados")
