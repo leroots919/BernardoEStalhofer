@@ -22,7 +22,8 @@ const ClientManagement = () => {
     address: '',
     city: '',
     state: '',
-    zip_code: ''
+    zip_code: '',
+    password: ''
   });
   const [caseFormData, setCaseFormData] = useState({
     title: '',
@@ -182,7 +183,8 @@ const ClientManagement = () => {
       address: '',
       city: '',
       state: '',
-      zip_code: ''
+      zip_code: '',
+      password: ''
     });
     setSelectedClient(null);
   };
@@ -405,6 +407,21 @@ const ClientManagement = () => {
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
+              {!selectedClient && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-300 mb-1">
+                    Senha Temporária
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Digite uma senha temporária para o cliente"
+                  />
+                </div>
+              )}
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"

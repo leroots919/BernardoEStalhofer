@@ -54,6 +54,7 @@ class ClientCreate(BaseModel):
     phone: Optional[str] = None
     cpf: Optional[str] = None
     address: Optional[str] = None
+    password: str  # Senha temporária definida pelo admin
 
 class ClientUpdate(BaseModel):
     name: Optional[str] = None
@@ -358,29 +359,43 @@ async def get_client(client_id: int, db_session=Depends(get_db), current_user=De
         raise HTTPException(status_code=500, detail=str(e))
 
 @app.post("/api/admin/clients")
-async def create_client(client_data: ClientCreate, db_session=Depends(get_db)):
+async def create_client(client_data: ClientCreate, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Criar novo cliente"""
     try:
+        print("🚀 CRIANDO NOVO CLIENTE")
+        print(f"📝 Dados do cliente: {client_data.dict()}")
+
         # Verificar se email já existe
         existing_client = db_session.query(Users).filter(Users.email == client_data.email).first()
         if existing_client:
             raise HTTPException(status_code=400, detail="Email já cadastrado")
 
-        # Criar novo cliente
-        from models import UserType
-        new_client = Users(
-            name=client_data.name,
-            email=client_data.email,
-            phone=client_data.phone,
-            cpf=client_data.cpf,
-            address=client_data.address,
-            type=UserType.cliente,
-            password_hash='temp123'  # Senha temporária
-        )
+        # Usar SQL raw para inserir cliente (compatível com a estrutura atual da tabela)
+        from datetime import datetime
 
-        db_session.add(new_client)
+        query = text("""
+        INSERT INTO users (name, email, phone, cpf, address, city, state, zip_code, type, password_hash, register_date)
+        VALUES (:name, :email, :phone, :cpf, :address, :city, :state, :zip_code, 'cliente', :password, NOW())
+        """)
+
+        result = db_session.execute(query, {
+            'name': client_data.name,
+            'email': client_data.email,
+            'phone': client_data.phone or '',
+            'cpf': client_data.cpf or '',
+            'address': client_data.address or '',
+            'city': '',  # Campos vazios por enquanto
+            'state': '',
+            'zip_code': '',
+            'password': client_data.password
+        })
+
         db_session.commit()
-        db_session.refresh(new_client)
+
+        # Buscar o cliente criado para retornar os dados
+        new_client_query = text("SELECT * FROM users WHERE email = :email")
+        new_client_result = db_session.execute(new_client_query, {'email': client_data.email})
+        new_client = new_client_result.fetchone()
 
         print(f"✅ Cliente criado: {new_client.name} (ID: {new_client.id})")
 
