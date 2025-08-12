@@ -711,12 +711,25 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
         if current_user.get('type') != 'admin':
             raise HTTPException(status_code=403, detail="Acesso negado")
 
+        # Primeiro, verificar se há arquivos
+        count_query = "SELECT COUNT(*) as total FROM process_files"
+        count_result = db_session.execute(text(count_query))
+        total_files = count_result.fetchone().total
+
+        logger.info(f"📁 Total de arquivos na base: {total_files}")
+
+        if total_files == 0:
+            logger.info("📁 Nenhum arquivo encontrado, retornando lista vazia")
+            return {"data": []}
+
         # Buscar todos os arquivos com informações do cliente e caso
         query = """
         SELECT pf.id, pf.case_id, pf.file_name, pf.original_name, pf.file_size,
                pf.upload_date, pf.file_type, pf.user_id,
-               u.name as client_name, u.email as client_email,
-               cc.title as case_title, cc.status as case_status
+               COALESCE(u.name, 'Cliente não encontrado') as client_name,
+               COALESCE(u.email, '') as client_email,
+               COALESCE(cc.title, 'Caso não encontrado') as case_title,
+               COALESCE(cc.status, '') as case_status
         FROM process_files pf
         LEFT JOIN users u ON pf.user_id = u.id
         LEFT JOIN client_cases cc ON pf.case_id = cc.id
