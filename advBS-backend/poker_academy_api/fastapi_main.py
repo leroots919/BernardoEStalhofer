@@ -553,6 +553,8 @@ async def create_client_case(client_id: int, case_data: CaseCreate, db_session=D
     """Criar novo caso para um cliente específico"""
     try:
         print(f"🔍 Criando caso para cliente ID: {client_id}")
+        print(f"🔍 DADOS RECEBIDOS: {case_data}")
+        print(f"🔍 SERVICE_ID RECEBIDO: {case_data.service_id}")
 
         # Verificar se cliente existe
         client = db_session.query(Users).filter(Users.id == client_id).first()
@@ -567,6 +569,8 @@ async def create_client_case(client_id: int, case_data: CaseCreate, db_session=D
             description=case_data.description,
             status=CaseStatus(case_data.status)
         )
+
+        print(f"🔍 NOVO CASO CRIADO COM SERVICE_ID: {new_case.service_id}")
 
         db_session.add(new_case)
         db_session.commit()

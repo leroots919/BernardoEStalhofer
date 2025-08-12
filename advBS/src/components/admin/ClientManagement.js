@@ -111,7 +111,8 @@ const ClientManagement = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await adminService.getServices();
+      // Usar a mesma rota que a aba de Processos usa
+      const response = await adminService.get('/api/services');
       console.log('Serviços carregados:', response);
 
       // A resposta vem no formato { data: [...] }
@@ -119,24 +120,14 @@ const ClientManagement = () => {
 
       if (Array.isArray(services) && services.length > 0) {
         setServices(services);
+        console.log('✅ Serviços carregados com sucesso:', services);
       } else {
-        // Se não conseguir buscar serviços, usar valores padrão
-        setServices([
-          { id: 1, name: 'CNH', description: 'Questões relacionadas à CNH' },
-          { id: 2, name: 'Acidentes', description: 'Acidentes de trânsito' },
-          { id: 3, name: 'Consultoria', description: 'Consultoria jurídica' },
-          { id: 4, name: 'Recursos', description: 'Recursos e defesas' }
-        ]);
+        console.log('⚠️ Nenhum serviço encontrado, usando valores padrão');
+        setServices([]);
       }
     } catch (error) {
-      console.error('Erro ao buscar serviços:', error);
-      // Se não conseguir buscar serviços, usar valores padrão
-      setServices([
-        { id: 1, name: 'CNH', description: 'Questões relacionadas à CNH' },
-        { id: 2, name: 'Acidentes', description: 'Acidentes de trânsito' },
-        { id: 3, name: 'Consultoria', description: 'Consultoria jurídica' },
-        { id: 4, name: 'Recursos', description: 'Recursos e defesas' }
-      ]);
+      console.error('❌ Erro ao buscar serviços:', error);
+      setServices([]);
     }
   };
 
@@ -202,7 +193,7 @@ const ClientManagement = () => {
       title: '',
       description: '',
       status: 'pendente',
-      service_id: services.length > 0 ? services[0].id : 1
+      service_id: services.length > 0 ? services[0].id : ''
     });
     setShowCaseModal(true);
   };
@@ -455,9 +446,10 @@ const ClientManagement = () => {
                   className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 >
+                  <option value="">Selecione um serviço</option>
                   {services.map(service => (
                     <option key={service.id} value={service.id}>
-                      {service.name} - {service.description}
+                      {service.name}
                     </option>
                   ))}
                 </select>
