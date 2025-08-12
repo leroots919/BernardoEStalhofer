@@ -240,6 +240,24 @@ def verify_token(authorization: str = Header(None)):
 
     raise HTTPException(status_code=401, detail="Token inválido")
 
+@app.get("/api/auth/verify")
+async def verify_token_route(current_user=Depends(verify_token)):
+    """Verificar se o token é válido e retornar dados do usuário"""
+    try:
+        logger.info(f"🔍 Verificando token para usuário: {current_user}")
+        return {
+            "valid": True,
+            "user": {
+                "id": current_user.get('user_id'),
+                "email": current_user.get('email'),
+                "type": current_user.get('type')
+            }
+        }
+    except Exception as e:
+        logger.error(f"❌ Erro na verificação de token: {e}")
+        raise HTTPException(status_code=401, detail="Token inválido")
+
+# ==================== ROTAS DE PERFIL ====================
 @app.get("/api/client/profile")
 async def get_client_profile(db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Obter perfil do cliente logado"""
