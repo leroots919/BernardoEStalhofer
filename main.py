@@ -70,7 +70,7 @@ class UserLogin(BaseModel):
 @app.get("/api/health")
 async def health_check():
     """Verificar se a API está funcionando"""
-    return {"message": "FastAPI está funcionando!", "status": "ok", "version": "2.0.0"}
+    return {"message": "FastAPI está funcionando!", "status": "ok", "version": "2.0.1", "timestamp": "2024-12-21 - FORCE REDEPLOY"}
 
 @app.post("/api/auth/login")
 async def login(user_data: UserLogin, db_session=Depends(get_db)):
