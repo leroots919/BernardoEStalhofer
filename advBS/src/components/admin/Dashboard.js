@@ -44,9 +44,9 @@ const Dashboard = () => {
       console.log('📦 Response clientes:', clientsResponse);
       console.log('📦 Response casos:', casesResponse);
 
-      // Extrair dados das respostas
-      const clients = clientsResponse?.data || clientsResponse || [];
-      const cases = casesResponse?.data || casesResponse || [];
+      // Extrair dados das respostas - corrigir duplo data
+      const clients = clientsResponse?.data?.data || clientsResponse?.data || [];
+      const cases = casesResponse?.data?.data || casesResponse?.data || [];
 
       console.log('✅ Clientes recebidos:', clients);
       console.log('✅ Casos recebidos:', cases);
