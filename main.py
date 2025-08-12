@@ -876,12 +876,12 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
 
         client_response = {
             'id': updated_client.id,
-            'name': updated_client.name,
-            'email': updated_client.email,
-            'phone': updated_client.phone,
-            'cpf': updated_client.cpf,
+            'name': updated_client.name or '',
+            'email': updated_client.email or '',
+            'phone': updated_client.phone or '',
+            'cpf': updated_client.cpf or '',
             'created_at': updated_client.created_at.isoformat() if updated_client.created_at else None,
-            'type': updated_client.type
+            'type': updated_client.type or 'cliente'
         }
 
         logger.info(f"✅ Resposta preparada: {client_response}")
@@ -893,8 +893,10 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
         raise
     except Exception as e:
         logger.error(f"❌ Erro ao atualizar cliente: {e}")
+        logger.error(f"❌ Tipo do erro: {type(e)}")
+        logger.error(f"❌ Args do erro: {e.args}")
         db_session.rollback()
-        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
 @app.put("/api/admin/processes/{process_id}")
 async def update_process(process_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
