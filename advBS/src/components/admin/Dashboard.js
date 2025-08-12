@@ -8,7 +8,7 @@ console.log('🔧 adminService disponível:', adminService);
 console.log('🔧 api.adminService disponível:', api.adminService);
 
 const Dashboard = () => {
-  console.log('🎯 Dashboard component renderizado!');
+  console.log('🎯 Dashboard component renderizado! - VERSÃO CORRIGIDA v2.1');
 
   const [stats, setStats] = useState({
     totalClients: 0,
