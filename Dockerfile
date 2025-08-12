@@ -17,8 +17,8 @@ COPY requirements.txt .
 # Instalar dependências Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código de teste
-COPY test_server.py .
+# Copiar código principal
+COPY main.py .
 
 # Criar diretório para uploads
 RUN mkdir -p uploads/documents
@@ -26,5 +26,5 @@ RUN mkdir -p uploads/documents
 # Expor porta
 EXPOSE 8000
 
-# Comando para iniciar a aplicação de teste
-CMD ["python", "test_server.py"]
+# Comando para iniciar a aplicação principal
+CMD ["python", "main.py"]

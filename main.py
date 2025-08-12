@@ -19,8 +19,11 @@ from sqlalchemy import text, create_engine
 from sqlalchemy.orm import sessionmaker
 import logging
 
-# Carregar variáveis de ambiente
-load_dotenv()
+# Carregar variáveis de ambiente (opcional - Railway usa variáveis de ambiente)
+try:
+    load_dotenv()
+except:
+    pass  # Em produção (Railway) não há arquivo .env
 
 # Criar aplicação FastAPI
 app = FastAPI(
