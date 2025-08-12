@@ -1040,6 +1040,38 @@ async def update_process(process_id: int, request: Request, db_session=Depends(g
         db_session.rollback()
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
+@app.delete("/api/admin/processes/{process_id}")
+async def delete_process(process_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Deletar um processo/caso (admin)"""
+    try:
+        print(f"🗑️ DELETANDO PROCESSO {process_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Deletar processo
+        query = "DELETE FROM client_cases WHERE id = :process_id"
+        result = db_session.execute(text(query), {"process_id": process_id})
+
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Processo não encontrado")
+
+        db_session.commit()
+        print(f"✅ Processo {process_id} deletado!")
+
+        return {"message": "Processo deletado com sucesso"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO ao deletar processo: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/api/admin/clients/{client_id}/cases")
 async def create_client_case(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Criar um novo caso para um cliente (admin) - Ultra Simples"""

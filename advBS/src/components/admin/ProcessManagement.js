@@ -5,6 +5,7 @@ import './ProcessManagement.css';
 const ProcessManagement = () => {
   const [processes, setProcesses] = useState([]);
   const [clients, setClients] = useState([]);
+  const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,6 +74,12 @@ const ProcessManagement = () => {
         const clientsResponse = await adminService.get('/api/admin/clients');
         setClients(clientsResponse?.data?.data || clientsResponse?.data || []);
       }
+
+      // Buscar serviços para o modal de edição
+      if (services.length === 0) {
+        const servicesResponse = await adminService.get('/api/services');
+        setServices(servicesResponse?.data?.data || servicesResponse?.data || []);
+      }
     } catch (error) {
       console.error('❌ Erro ao carregar dados:', error);
       setError('Erro ao carregar dados');
@@ -128,7 +135,8 @@ const ProcessManagement = () => {
     setEditingProcess({
       id: process.id,
       description: process.description || '',
-      status: process.status || 'em_andamento'
+      status: process.status || 'em_andamento',
+      service_id: process.service_id || ''
     });
     setShowEditModal(true);
   };
@@ -137,7 +145,8 @@ const ProcessManagement = () => {
     try {
       await adminService.put(`/api/admin/processes/${editingProcess.id}`, {
         description: editingProcess.description,
-        status: editingProcess.status
+        status: editingProcess.status,
+        service_id: editingProcess.service_id
       });
       setShowEditModal(false);
       setEditingProcess(null);
@@ -389,6 +398,21 @@ const ProcessManagement = () => {
                 rows="4"
                 className="form-input"
               />
+            </div>
+            <div className="form-group">
+              <label>Tipo de Serviço:</label>
+              <select
+                value={editingProcess?.service_id || ''}
+                onChange={(e) => setEditingProcess({...editingProcess, service_id: e.target.value})}
+                className="form-select"
+              >
+                <option value="">Selecione um serviço</option>
+                {services.map(service => (
+                  <option key={service.id} value={service.id}>
+                    {service.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className="form-group">
               <label>Status:</label>
