@@ -92,8 +92,9 @@ const ClientManagement = () => {
       const response = await adminService.getClientCases(clientId);
       console.log(`Casos do cliente ${clientId}:`, response);
 
-      // A resposta vem no formato { data: [...] }
-      const cases = response.data || response || [];
+      // A resposta vem no formato { data: { data: [...] } } (duplo data do axios)
+      const cases = response?.data?.data || response?.data || [];
+      console.log('🔍 Tipo de cases:', typeof cases, Array.isArray(cases));
 
       setClientCases(prev => ({
         ...prev,

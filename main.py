@@ -960,7 +960,7 @@ async def update_process(process_id: int, request: Request, db_session=Depends(g
 
 @app.post("/api/admin/clients/{client_id}/cases")
 async def create_client_case(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
-    """Criar um novo caso para um cliente (admin)"""
+    """Criar um novo caso para um cliente (admin) - Ultra Simples"""
     try:
         print(f"🚀 CRIANDO CASO PARA CLIENTE {client_id}")
 
@@ -970,78 +970,55 @@ async def create_client_case(client_id: int, request: Request, db_session=Depend
 
         # Obter dados do request
         case_data = await request.json()
-        print(f"📝 Dados do caso: {case_data}")
+        print(f"📝 Dados recebidos: {case_data}")
 
-        # Verificar se cliente existe
-        check_client = db_session.execute(text("SELECT id FROM users WHERE id = :client_id AND type = 'cliente'"),
-                                        {"client_id": client_id})
-        if not check_client.fetchone():
-            raise HTTPException(status_code=404, detail="Cliente não encontrado")
-
-        # Inserir novo caso - versão simples
+        # Dados básicos
         title = case_data.get('title', 'Novo Caso')
         description = case_data.get('description', '')
         status = case_data.get('status', 'pendente')
-        service_id = case_data.get('service_id', None)
 
-        # Insert simples
-        if service_id:
-            insert_query = """
-            INSERT INTO client_cases (client_id, title, description, status, service_id, created_at)
-            VALUES (:client_id, :title, :description, :status, :service_id, NOW())
-            """
-            params = {
-                "client_id": client_id,
-                "title": title,
-                "description": description,
-                "status": status,
-                "service_id": service_id
-            }
-        else:
-            insert_query = """
-            INSERT INTO client_cases (client_id, title, description, status, created_at)
-            VALUES (:client_id, :title, :description, :status, NOW())
-            """
-            params = {
-                "client_id": client_id,
-                "title": title,
-                "description": description,
-                "status": status
-            }
+        print(f"📝 Título: {title}, Descrição: {description}, Status: {status}")
 
-        print(f"📝 Query: {insert_query}")
-        print(f"📝 Params: {params}")
+        # Insert mais simples possível
+        insert_query = "INSERT INTO client_cases (client_id, title, description, status, created_at) VALUES (:client_id, :title, :description, :status, NOW())"
+
+        params = {
+            "client_id": client_id,
+            "title": title,
+            "description": description,
+            "status": status
+        }
+
+        print(f"📝 Executando insert com params: {params}")
 
         result = db_session.execute(text(insert_query), params)
         db_session.commit()
 
-        # Obter ID do caso criado
         case_id = result.lastrowid
         print(f"✅ Caso criado com ID: {case_id}")
 
-        # Resposta simples
-        response_data = {
-            'id': case_id,
-            'title': title,
-            'description': description,
-            'status': status,
-            'client_id': client_id,
-            'service_id': service_id,
-            'created': True
+        # Resposta ultra simples
+        return {
+            "data": {
+                "id": case_id,
+                "title": title,
+                "description": description,
+                "status": status,
+                "client_id": client_id,
+                "success": True
+            }
         }
-
-        print(f"✅ SUCESSO! Caso {case_id} criado para cliente {client_id}")
-        return {"data": response_data}
 
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ ERRO ao criar caso: {e}")
+        print(f"❌ ERRO DETALHADO: {e}")
+        print(f"❌ TIPO: {type(e)}")
         try:
             db_session.rollback()
         except:
             pass
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=f"Erro: {str(e)}")
 
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
