@@ -170,17 +170,33 @@ def get_cases():
     """Listar todos os casos"""
     try:
         print("🔍 Requisição GET /api/admin/cases recebida")
-        cases = ClientCases.query.all()
-        print(f"📊 Encontrados {len(cases)} casos")
-        return jsonify([{
-            'id': case.id,
-            'user_id': case.user_id,
-            'title': case.title,
-            'description': case.description,
-            'status': case.status.value,
-            'created_at': case.created_at.isoformat(),
-            'updated_at': case.updated_at.isoformat()
-        } for case in cases]), 200
+
+        # Fazer JOIN com services para pegar o nome do serviço
+        cases_with_services = db.session.query(ClientCases, Services, Users).join(
+            Services, ClientCases.service_id == Services.id, isouter=True
+        ).join(
+            Users, ClientCases.user_id == Users.id, isouter=True
+        ).all()
+
+        print(f"📊 Encontrados {len(cases_with_services)} casos")
+
+        cases_data = []
+        for case, service, user in cases_with_services:
+            cases_data.append({
+                'id': case.id,
+                'user_id': case.user_id,
+                'service_id': case.service_id,
+                'title': case.title,
+                'description': case.description,
+                'status': case.status.value,
+                'created_at': case.created_at.isoformat(),
+                'updated_at': case.updated_at.isoformat(),
+                'service_name': service.name if service else 'Não informado',
+                'client_name': user.name if user else 'Cliente não encontrado',
+                'client_email': user.email if user else ''
+            })
+
+        return jsonify(cases_data), 200
     except Exception as e:
         current_app.logger.error(f"Erro ao buscar casos: {e}", exc_info=True)
         return jsonify({"error": "Erro interno do servidor"}), 500
