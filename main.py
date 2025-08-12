@@ -831,8 +831,8 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
 
         # Verificar se cliente existe
         try:
-            check_query = "SELECT id, name, email FROM users WHERE id = %s AND type = 'cliente'"
-            check_result = db_session.execute(text(check_query), (client_id,))
+            check_query = "SELECT id, name, email FROM users WHERE id = :client_id AND type = 'cliente'"
+            check_result = db_session.execute(text(check_query), {"client_id": client_id})
             existing_client = check_result.fetchone()
 
             if not existing_client:
@@ -848,23 +848,23 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
         try:
             # Usar apenas os campos que vieram no request
             if 'name' in client_data and client_data['name']:
-                update_name_query = "UPDATE users SET name = %s WHERE id = %s"
-                db_session.execute(text(update_name_query), (client_data['name'], client_id))
+                update_name_query = "UPDATE users SET name = :name WHERE id = :client_id"
+                db_session.execute(text(update_name_query), {"name": client_data['name'], "client_id": client_id})
                 logger.info(f"✅ Nome atualizado para: {client_data['name']}")
 
             if 'email' in client_data and client_data['email']:
-                update_email_query = "UPDATE users SET email = %s WHERE id = %s"
-                db_session.execute(text(update_email_query), (client_data['email'], client_id))
+                update_email_query = "UPDATE users SET email = :email WHERE id = :client_id"
+                db_session.execute(text(update_email_query), {"email": client_data['email'], "client_id": client_id})
                 logger.info(f"✅ Email atualizado para: {client_data['email']}")
 
             if 'phone' in client_data:
-                update_phone_query = "UPDATE users SET phone = %s WHERE id = %s"
-                db_session.execute(text(update_phone_query), (client_data['phone'], client_id))
+                update_phone_query = "UPDATE users SET phone = :phone WHERE id = :client_id"
+                db_session.execute(text(update_phone_query), {"phone": client_data['phone'], "client_id": client_id})
                 logger.info(f"✅ Telefone atualizado para: {client_data['phone']}")
 
             if 'cpf' in client_data:
-                update_cpf_query = "UPDATE users SET cpf = %s WHERE id = %s"
-                db_session.execute(text(update_cpf_query), (client_data['cpf'], client_id))
+                update_cpf_query = "UPDATE users SET cpf = :cpf WHERE id = :client_id"
+                db_session.execute(text(update_cpf_query), {"cpf": client_data['cpf'], "client_id": client_id})
                 logger.info(f"✅ CPF atualizado para: {client_data['cpf']}")
 
             # Commit das mudanças
@@ -878,8 +878,8 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
 
         # Buscar cliente atualizado
         try:
-            final_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = %s"
-            final_result = db_session.execute(text(final_query), (client_id,))
+            final_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = :client_id"
+            final_result = db_session.execute(text(final_query), {"client_id": client_id})
             updated_client = final_result.fetchone()
 
             if not updated_client:
