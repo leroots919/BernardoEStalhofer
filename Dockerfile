@@ -12,13 +12,14 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Copiar requirements
-COPY advBS-backend/requirements.txt .
+COPY requirements.txt .
 
 # Instalar dependências Python
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar código do backend
-COPY advBS-backend/ .
+# Copiar código principal
+COPY main.py .
+COPY .env .
 
 # Criar diretório para uploads
 RUN mkdir -p uploads/documents
@@ -27,4 +28,4 @@ RUN mkdir -p uploads/documents
 EXPOSE 8000
 
 # Comando para iniciar a aplicação
-CMD ["sh", "-c", "uvicorn fastapi_main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["python", "main.py"]
