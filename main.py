@@ -924,11 +924,11 @@ async def update_process(process_id: int, request: Request, db_session=Depends(g
 
         # Buscar processo atualizado
         select_query = """
-        SELECT cc.id, cc.title, cc.description, cc.status, cc.created_at, cc.client_id, cc.service_id,
+        SELECT cc.id, cc.title, cc.description, cc.status, cc.created_at, cc.user_id as client_id, cc.service_id,
                u.name as client_name, u.email as client_email,
                s.name as service_name
         FROM client_cases cc
-        LEFT JOIN users u ON cc.client_id = u.id
+        LEFT JOIN users u ON cc.user_id = u.id
         LEFT JOIN services s ON cc.service_id = s.id
         WHERE cc.id = :process_id
         """
@@ -979,11 +979,11 @@ async def create_client_case(client_id: int, request: Request, db_session=Depend
 
         print(f"📝 Título: {title}, Descrição: {description}, Status: {status}")
 
-        # Insert mais simples possível
-        insert_query = "INSERT INTO client_cases (client_id, title, description, status, created_at) VALUES (:client_id, :title, :description, :status, NOW())"
+        # Insert mais simples possível - CORRIGIDO: usar user_id em vez de client_id
+        insert_query = "INSERT INTO client_cases (user_id, title, description, status, created_at) VALUES (:user_id, :title, :description, :status, NOW())"
 
         params = {
-            "client_id": client_id,
+            "user_id": client_id,  # A tabela usa user_id, não client_id
             "title": title,
             "description": description,
             "status": status
@@ -1042,11 +1042,11 @@ async def create_case_alternative(request: Request, db_session=Depends(get_db), 
         if not client_id:
             raise HTTPException(status_code=400, detail="client_id obrigatório")
 
-        # Insert direto
-        query = "INSERT INTO client_cases (client_id, title, description, status, created_at) VALUES (:client_id, :title, :description, :status, NOW())"
+        # Insert direto - CORRIGIDO: usar user_id
+        query = "INSERT INTO client_cases (user_id, title, description, status, created_at) VALUES (:user_id, :title, :description, :status, NOW())"
 
         result = db_session.execute(text(query), {
-            "client_id": client_id,
+            "user_id": client_id,  # A tabela usa user_id
             "title": title,
             "description": description,
             "status": status
@@ -1108,9 +1108,9 @@ async def create_case_public(request: Request, db_session=Depends(get_db), curre
             if not check_table.fetchone():
                 raise HTTPException(status_code=500, detail="Tabela client_cases não existe")
 
-            # Insert com valores diretos
+            # Insert com valores diretos - CORRIGIDO: usar user_id
             insert_sql = f"""
-            INSERT INTO client_cases (client_id, title, description, status, created_at)
+            INSERT INTO client_cases (user_id, title, description, status, created_at)
             VALUES ({client_id}, '{title}', '{description}', '{status}', NOW())
             """
 
