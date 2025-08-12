@@ -775,6 +775,9 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
             raise HTTPException(status_code=403, detail="Acesso negado")
 
         # Buscar clientes que contenham o termo no nome ou email
+        search_term = f"%{q}%"
+        logger.info(f"🔍 Termo de busca: '{search_term}'")
+
         query = """
         SELECT id, name, email, phone, cpf, created_at, type
         FROM users
@@ -783,7 +786,6 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
         ORDER BY name
         LIMIT :limit
         """
-        search_term = f"%{q}%"
         result = db_session.execute(text(query), {"search_term": search_term, "limit": limit})
         clients = result.fetchall()
 
@@ -853,15 +855,26 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
 
         # Executar atualização
         update_query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = :client_id"
+        logger.info(f"📝 Query de atualização: {update_query}")
+        logger.info(f"📝 Parâmetros: {params}")
+
         db_session.execute(text(update_query), params)
         db_session.commit()
+        logger.info("✅ Atualização executada com sucesso")
 
         # Buscar cliente atualizado
         select_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = :client_id"
+        logger.info(f"📝 Buscando cliente atualizado...")
         result = db_session.execute(text(select_query), {"client_id": client_id})
         updated_client = result.fetchone()
 
-        client_data = {
+        if not updated_client:
+            logger.error("❌ Cliente não encontrado após atualização")
+            raise HTTPException(status_code=404, detail="Cliente não encontrado após atualização")
+
+        logger.info(f"✅ Cliente encontrado: {updated_client.name}")
+
+        client_response = {
             'id': updated_client.id,
             'name': updated_client.name,
             'email': updated_client.email,
@@ -871,8 +884,10 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
             'type': updated_client.type
         }
 
+        logger.info(f"✅ Resposta preparada: {client_response}")
+
         logger.info(f"✅ Cliente {client_id} atualizado com sucesso")
-        return {"data": client_data}
+        return {"data": client_response}
 
     except HTTPException:
         raise
