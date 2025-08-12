@@ -73,11 +73,21 @@ engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 def get_db():
-    db = SessionLocal()
+    """Obter sessão do banco de dados"""
     try:
+        logger.info(f"🔗 Criando sessão do banco: {DB_HOST}:{DB_PORT}/{DB_NAME}")
+        db = SessionLocal()
+        logger.info("✅ Sessão do banco criada com sucesso")
         yield db
+    except Exception as e:
+        logger.error(f"❌ Erro ao criar sessão do banco: {e}")
+        raise
     finally:
-        db.close()
+        try:
+            db.close()
+            logger.info("🔒 Sessão do banco fechada")
+        except:
+            pass
 
 # Modelos Pydantic
 class UserLogin(BaseModel):
@@ -117,7 +127,9 @@ async def debug_routes():
 async def login(user_data: UserLogin, db_session=Depends(get_db)):
     """Login de usuário"""
     try:
-        print(f"🔐 Tentativa de login: {user_data.email}")
+        logger.info(f"🔐 Tentativa de login: {user_data.email}")
+        logger.info(f"🔍 DB Session: {db_session}")
+        logger.info(f"🔍 DB Config: {DB_HOST}:{DB_PORT}/{DB_NAME}")
 
         # Buscar usuário por email OU username usando SQL direto
         query = "SELECT id, name, email, password_hash, type FROM users WHERE email = %s OR username = %s"
@@ -184,8 +196,11 @@ async def login(user_data: UserLogin, db_session=Depends(get_db)):
     except HTTPException:
         raise
     except Exception as e:
-        print(f"❌ Erro no login: {str(e)}")
-        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+        logger.error(f"❌ Erro no login: {str(e)}")
+        logger.error(f"❌ Tipo do erro: {type(e)}")
+        import traceback
+        logger.error(f"❌ Stack trace: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
 def verify_token(authorization: str = Header(None)):
     """Verificar token de autenticação JWT"""
