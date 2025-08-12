@@ -31,9 +31,10 @@ const ProcessFileUpload = () => {
       const response = await api.get('/api/admin/process-files');
       console.log('📁 Resposta dos arquivos:', response);
 
-      // A API retorna { data: [...] }, então precisamos acessar response.data
-      const filesData = response.data || [];
+      // A API retorna { data: { data: [...] } } (duplo data do axios)
+      const filesData = response?.data?.data || response?.data || [];
       console.log('📁 Arquivos carregados:', filesData);
+      console.log('🔍 Tipo de filesData:', typeof filesData, Array.isArray(filesData));
 
       setUploadedFiles(filesData);
     } catch (error) {

@@ -764,6 +764,119 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
         logger.error(f"❌ Erro ao buscar arquivos: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
+@app.get("/api/admin/clients/search")
+async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Buscar clientes por nome ou email (admin)"""
+    try:
+        logger.info(f"🔍 Buscando clientes com termo: '{q}', limite: {limit}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Buscar clientes que contenham o termo no nome ou email
+        query = """
+        SELECT id, name, email, phone, cpf, created_at, type
+        FROM users
+        WHERE type = 'cliente'
+        AND (name LIKE :search_term OR email LIKE :search_term)
+        ORDER BY name
+        LIMIT :limit
+        """
+        search_term = f"%{q}%"
+        result = db_session.execute(text(query), {"search_term": search_term, "limit": limit})
+        clients = result.fetchall()
+
+        clients_list = []
+        for client in clients:
+            clients_list.append({
+                'id': client.id,
+                'name': client.name,
+                'email': client.email,
+                'phone': client.phone,
+                'cpf': client.cpf,
+                'created_at': client.created_at.isoformat() if client.created_at else None,
+                'type': client.type
+            })
+
+        logger.info(f"✅ {len(clients_list)} clientes encontrados")
+        return {"data": clients_list}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao buscar clientes: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.put("/api/admin/clients/{client_id}")
+async def update_client(client_id: int, client_data: dict, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Atualizar dados de um cliente (admin)"""
+    try:
+        logger.info(f"📝 Atualizando cliente ID: {client_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Verificar se cliente existe
+        check_query = "SELECT id FROM users WHERE id = :client_id AND type = 'cliente'"
+        check_result = db_session.execute(text(check_query), {"client_id": client_id})
+        if not check_result.fetchone():
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        # Preparar campos para atualização
+        update_fields = []
+        params = {"client_id": client_id}
+
+        if 'name' in client_data:
+            update_fields.append("name = :name")
+            params['name'] = client_data['name']
+
+        if 'email' in client_data:
+            update_fields.append("email = :email")
+            params['email'] = client_data['email']
+
+        if 'phone' in client_data:
+            update_fields.append("phone = :phone")
+            params['phone'] = client_data['phone']
+
+        if 'cpf' in client_data:
+            update_fields.append("cpf = :cpf")
+            params['cpf'] = client_data['cpf']
+
+        if not update_fields:
+            raise HTTPException(status_code=400, detail="Nenhum campo para atualizar")
+
+        # Executar atualização
+        update_query = f"UPDATE users SET {', '.join(update_fields)} WHERE id = :client_id"
+        db_session.execute(text(update_query), params)
+        db_session.commit()
+
+        # Buscar cliente atualizado
+        select_query = "SELECT id, name, email, phone, cpf, created_at, type FROM users WHERE id = :client_id"
+        result = db_session.execute(text(select_query), {"client_id": client_id})
+        updated_client = result.fetchone()
+
+        client_data = {
+            'id': updated_client.id,
+            'name': updated_client.name,
+            'email': updated_client.email,
+            'phone': updated_client.phone,
+            'cpf': updated_client.cpf,
+            'created_at': updated_client.created_at.isoformat() if updated_client.created_at else None,
+            'type': updated_client.type
+        }
+
+        logger.info(f"✅ Cliente {client_id} atualizado com sucesso")
+        return {"data": client_data}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao atualizar cliente: {e}")
+        db_session.rollback()
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
