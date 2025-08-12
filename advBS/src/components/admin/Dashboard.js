@@ -43,6 +43,8 @@ const Dashboard = () => {
 
       console.log('📦 Response clientes:', clientsResponse);
       console.log('📦 Response casos:', casesResponse);
+      console.log('🔍 Estrutura clientsResponse.data:', clientsResponse?.data);
+      console.log('🔍 Estrutura casesResponse.data:', casesResponse?.data);
 
       // Extrair dados das respostas - corrigir duplo data
       const clients = clientsResponse?.data?.data || clientsResponse?.data || [];
