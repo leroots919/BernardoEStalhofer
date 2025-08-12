@@ -36,6 +36,13 @@ const ProcessManagement = () => {
       console.log('🔍 Tipo de allCases:', typeof allCases, Array.isArray(allCases));
       console.log('🔍 allCases:', allCases);
 
+      // DEBUG: Verificar se service_name está presente
+      if (allCases.length > 0) {
+        console.log('🔍 PRIMEIRO CASO COMPLETO:', allCases[0]);
+        console.log('🔍 SERVICE_NAME do primeiro caso:', allCases[0].service_name);
+        console.log('🔍 Todas as propriedades do primeiro caso:', Object.keys(allCases[0]));
+      }
+
       // Garantir que é array
       if (!Array.isArray(allCases)) {
         console.log('❌ allCases não é array, convertendo...');

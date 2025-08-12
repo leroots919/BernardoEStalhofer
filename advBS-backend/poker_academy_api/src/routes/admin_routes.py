@@ -182,6 +182,9 @@ def get_cases():
 
         cases_data = []
         for case, service, user in cases_with_services:
+            service_name = service.name if service else 'Não informado'
+            print(f"🔍 Caso ID {case.id}: service_id={case.service_id}, service_name='{service_name}'")
+
             cases_data.append({
                 'id': case.id,
                 'user_id': case.user_id,
@@ -191,11 +194,12 @@ def get_cases():
                 'status': case.status.value,
                 'created_at': case.created_at.isoformat(),
                 'updated_at': case.updated_at.isoformat(),
-                'service_name': service.name if service else 'Não informado',
+                'service_name': service_name,
                 'client_name': user.name if user else 'Cliente não encontrado',
                 'client_email': user.email if user else ''
             })
 
+        print(f"✅ Retornando {len(cases_data)} casos com service_name")
         return jsonify(cases_data), 200
     except Exception as e:
         current_app.logger.error(f"Erro ao buscar casos: {e}", exc_info=True)
