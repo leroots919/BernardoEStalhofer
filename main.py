@@ -978,57 +978,56 @@ async def create_client_case(client_id: int, request: Request, db_session=Depend
         if not check_client.fetchone():
             raise HTTPException(status_code=404, detail="Cliente não encontrado")
 
-        # Inserir novo caso
-        insert_query = """
-        INSERT INTO client_cases (client_id, title, description, status, service_id, created_at)
-        VALUES (:client_id, :title, :description, :status, :service_id, NOW())
-        """
+        # Inserir novo caso - versão simples
+        title = case_data.get('title', 'Novo Caso')
+        description = case_data.get('description', '')
+        status = case_data.get('status', 'pendente')
+        service_id = case_data.get('service_id', None)
 
-        case_params = {
-            "client_id": client_id,
-            "title": case_data.get('title', 'Novo Caso'),
-            "description": case_data.get('description', ''),
-            "status": case_data.get('status', 'pendente'),
-            "service_id": case_data.get('service_id', None)
-        }
+        # Insert simples
+        if service_id:
+            insert_query = """
+            INSERT INTO client_cases (client_id, title, description, status, service_id, created_at)
+            VALUES (:client_id, :title, :description, :status, :service_id, NOW())
+            """
+            params = {
+                "client_id": client_id,
+                "title": title,
+                "description": description,
+                "status": status,
+                "service_id": service_id
+            }
+        else:
+            insert_query = """
+            INSERT INTO client_cases (client_id, title, description, status, created_at)
+            VALUES (:client_id, :title, :description, :status, NOW())
+            """
+            params = {
+                "client_id": client_id,
+                "title": title,
+                "description": description,
+                "status": status
+            }
 
-        print(f"📝 Parâmetros do caso: {case_params}")
+        print(f"📝 Query: {insert_query}")
+        print(f"📝 Params: {params}")
 
-        result = db_session.execute(text(insert_query), case_params)
+        result = db_session.execute(text(insert_query), params)
         db_session.commit()
 
         # Obter ID do caso criado
         case_id = result.lastrowid
         print(f"✅ Caso criado com ID: {case_id}")
 
-        # Buscar caso criado com dados completos
-        select_query = """
-        SELECT cc.id, cc.title, cc.description, cc.status, cc.created_at, cc.client_id, cc.service_id,
-               u.name as client_name, u.email as client_email,
-               s.name as service_name
-        FROM client_cases cc
-        LEFT JOIN users u ON cc.client_id = u.id
-        LEFT JOIN services s ON cc.service_id = s.id
-        WHERE cc.id = :case_id
-        """
-
-        case_result = db_session.execute(text(select_query), {"case_id": case_id})
-        created_case = case_result.fetchone()
-
-        if not created_case:
-            raise HTTPException(status_code=500, detail="Erro ao buscar caso criado")
-
+        # Resposta simples
         response_data = {
-            'id': created_case.id,
-            'title': created_case.title,
-            'description': created_case.description,
-            'status': created_case.status,
-            'created_at': created_case.created_at.isoformat() if created_case.created_at else None,
-            'client_id': created_case.client_id,
-            'service_id': created_case.service_id,
-            'client_name': created_case.client_name,
-            'client_email': created_case.client_email,
-            'service_name': created_case.service_name
+            'id': case_id,
+            'title': title,
+            'description': description,
+            'status': status,
+            'client_id': client_id,
+            'service_id': service_id,
+            'created': True
         }
 
         print(f"✅ SUCESSO! Caso {case_id} criado para cliente {client_id}")
