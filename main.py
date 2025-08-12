@@ -874,6 +874,85 @@ async def update_client(client_id: int, request: Request, db_session=Depends(get
             pass
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.post("/api/admin/clients")
+async def create_client(request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Criar novo cliente (admin)"""
+    try:
+        print("🚀 CRIANDO NOVO CLIENTE")
+
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        data = await request.json()
+        print(f"📝 Dados do cliente: {data}")
+
+        # Insert simples
+        query = "INSERT INTO users (name, email, phone, cpf, type, password, created_at) VALUES (:name, :email, :phone, :cpf, 'cliente', 'cliente123', NOW())"
+
+        result = db_session.execute(text(query), {
+            "name": data.get('name', ''),
+            "email": data.get('email', ''),
+            "phone": data.get('phone', ''),
+            "cpf": data.get('cpf', '')
+        })
+
+        db_session.commit()
+        client_id = result.lastrowid
+
+        print(f"✅ Cliente {client_id} criado!")
+
+        return {
+            "data": {
+                "id": client_id,
+                "name": data.get('name', ''),
+                "email": data.get('email', ''),
+                "phone": data.get('phone', ''),
+                "cpf": data.get('cpf', ''),
+                "type": "cliente"
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO ao criar cliente: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/clients/{client_id}")
+async def delete_client(client_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Deletar cliente (admin)"""
+    try:
+        print(f"🗑️ DELETANDO CLIENTE {client_id}")
+
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Deletar cliente
+        query = "DELETE FROM users WHERE id = :client_id AND type = 'cliente'"
+        result = db_session.execute(text(query), {"client_id": client_id})
+
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        db_session.commit()
+        print(f"✅ Cliente {client_id} deletado!")
+
+        return {"message": "Cliente deletado com sucesso"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO ao deletar cliente: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.put("/api/admin/processes/{process_id}")
 async def update_process(process_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Atualizar dados de um processo/caso (admin)"""
