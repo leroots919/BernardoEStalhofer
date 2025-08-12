@@ -516,6 +516,33 @@ async def get_cases(db_session=Depends(get_db), current_user=Depends(verify_toke
         print(f"❌ Erro ao buscar casos: {str(e)}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# ==================== ROTAS DE SERVIÇOS ====================
+
+@app.get("/api/services")
+async def get_services(db_session=Depends(get_db)):
+    """Listar todos os serviços disponíveis"""
+    try:
+        print("🔍 Buscando serviços...")
+        services = db_session.query(Services).all()
+
+        result = [
+            {
+                "id": service.id,
+                "name": service.name,
+                "description": service.description,
+                "category": service.category.value if hasattr(service.category, 'value') else str(service.category),
+                "price": float(service.price) if service.price else None
+            }
+            for service in services
+        ]
+
+        print(f"✅ Encontrados {len(result)} serviços")
+        return result
+
+    except Exception as e:
+        print(f"❌ Erro ao buscar serviços: {str(e)}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/admin/clients/{client_id}/cases")
 async def get_admin_client_cases(client_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Buscar casos de um cliente específico"""
