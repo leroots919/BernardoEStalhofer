@@ -699,6 +699,58 @@ async def get_analytics_stats(db_session=Depends(get_db), current_user=Depends(v
         print(f"❌ Erro ao calcular estatísticas: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
+# ==================== ROTAS DE ARQUIVOS ====================
+
+@app.get("/api/admin/process-files")
+async def get_process_files(db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Listar todos os arquivos de processos (admin)"""
+    try:
+        logger.info("🚀 ROTA /api/admin/process-files CHAMADA!")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Buscar todos os arquivos com informações do cliente e caso
+        query = """
+        SELECT pf.id, pf.case_id, pf.file_name, pf.original_name, pf.file_size,
+               pf.upload_date, pf.file_type, pf.user_id,
+               u.name as client_name, u.email as client_email,
+               cc.title as case_title, cc.status as case_status
+        FROM process_files pf
+        LEFT JOIN users u ON pf.user_id = u.id
+        LEFT JOIN client_cases cc ON pf.case_id = cc.id
+        ORDER BY pf.upload_date DESC
+        """
+        result = db_session.execute(text(query))
+        files = result.fetchall()
+
+        files_list = []
+        for file in files:
+            files_list.append({
+                'id': file.id,
+                'case_id': file.case_id,
+                'file_name': file.file_name,
+                'original_name': file.original_name,
+                'file_size': file.file_size,
+                'upload_date': file.upload_date.isoformat() if file.upload_date else None,
+                'file_type': file.file_type,
+                'user_id': file.user_id,
+                'client_name': file.client_name,
+                'client_email': file.client_email,
+                'case_title': file.case_title,
+                'case_status': file.case_status
+            })
+
+        logger.info(f"✅ {len(files_list)} arquivos encontrados")
+        return {"data": files_list}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao buscar arquivos: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
