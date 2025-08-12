@@ -46,22 +46,47 @@ const Dashboard = () => {
       console.log('🔍 Estrutura clientsResponse.data:', clientsResponse?.data);
       console.log('🔍 Estrutura casesResponse.data:', casesResponse?.data);
 
+      // LOGS DETALHADOS PARA DEBUG
+      console.log('🔍 clientsResponse?.data?.data existe?', !!clientsResponse?.data?.data);
+      console.log('🔍 clientsResponse?.data?.data é array?', Array.isArray(clientsResponse?.data?.data));
+      console.log('🔍 clientsResponse?.data existe?', !!clientsResponse?.data);
+      console.log('🔍 clientsResponse?.data é array?', Array.isArray(clientsResponse?.data));
+      console.log('🔍 Valor de clientsResponse?.data?.data:', clientsResponse?.data?.data);
+      console.log('🔍 Valor de clientsResponse?.data:', clientsResponse?.data);
+
       // Extrair dados das respostas - corrigir duplo data do axios
       // API retorna {data: Array}, axios encapsula em {data: {data: Array}}
       let clients = [];
       let cases = [];
 
+      console.log('🚀 INICIANDO PROCESSAMENTO DOS CLIENTES...');
       if (clientsResponse?.data?.data && Array.isArray(clientsResponse.data.data)) {
+        console.log('✅ Usando clientsResponse.data.data (duplo data)');
         clients = clientsResponse.data.data;
       } else if (clientsResponse?.data && Array.isArray(clientsResponse.data)) {
+        console.log('✅ Usando clientsResponse.data (data simples)');
         clients = clientsResponse.data;
+      } else {
+        console.log('❌ Nenhuma estrutura de dados válida encontrada para clientes');
+        console.log('❌ clientsResponse?.data?.data:', clientsResponse?.data?.data);
+        console.log('❌ clientsResponse?.data:', clientsResponse?.data);
       }
 
+      console.log('🚀 INICIANDO PROCESSAMENTO DOS CASOS...');
       if (casesResponse?.data?.data && Array.isArray(casesResponse.data.data)) {
+        console.log('✅ Usando casesResponse.data.data (duplo data)');
         cases = casesResponse.data.data;
       } else if (casesResponse?.data && Array.isArray(casesResponse.data)) {
+        console.log('✅ Usando casesResponse.data (data simples)');
         cases = casesResponse.data;
+      } else {
+        console.log('❌ Nenhuma estrutura de dados válida encontrada para casos');
+        console.log('❌ casesResponse?.data?.data:', casesResponse?.data?.data);
+        console.log('❌ casesResponse?.data:', casesResponse?.data);
       }
+
+      console.log('🔍 RESULTADO FINAL - clients:', clients);
+      console.log('🔍 RESULTADO FINAL - cases:', cases);
 
       console.log('✅ Clientes recebidos:', clients);
       console.log('✅ Casos recebidos:', cases);
