@@ -77,8 +77,11 @@ const ProcessManagement = () => {
 
       // Buscar serviços para o modal de edição
       if (services.length === 0) {
+        console.log('🔍 Carregando serviços...');
         const servicesResponse = await adminService.get('/api/services');
-        setServices(servicesResponse?.data?.data || servicesResponse?.data || []);
+        const servicesData = servicesResponse?.data?.data || servicesResponse?.data || [];
+        console.log('📋 Serviços carregados:', servicesData.length, servicesData);
+        setServices(servicesData);
       }
     } catch (error) {
       console.error('❌ Erro ao carregar dados:', error);
@@ -131,7 +134,23 @@ const ProcessManagement = () => {
     return new Date(dateString).toLocaleDateString('pt-BR');
   };
 
-  const handleEditProcess = (process) => {
+  const handleEditProcess = async (process) => {
+    console.log('🔍 Editando processo:', process);
+    console.log('📋 Serviços disponíveis:', services.length, services);
+
+    // Garantir que os serviços estejam carregados
+    if (services.length === 0) {
+      console.log('🔄 Carregando serviços para o modal...');
+      try {
+        const servicesResponse = await adminService.get('/api/services');
+        const servicesData = servicesResponse?.data?.data || servicesResponse?.data || [];
+        console.log('📋 Serviços carregados para modal:', servicesData.length);
+        setServices(servicesData);
+      } catch (error) {
+        console.error('❌ Erro ao carregar serviços:', error);
+      }
+    }
+
     setEditingProcess({
       id: process.id,
       description: process.description || '',
@@ -407,12 +426,20 @@ const ProcessManagement = () => {
                 className="form-select"
               >
                 <option value="">Selecione um serviço</option>
-                {services.map(service => (
-                  <option key={service.id} value={service.id}>
-                    {service.name}
-                  </option>
-                ))}
+                {services.length > 0 ? (
+                  services.map(service => (
+                    <option key={service.id} value={service.id}>
+                      {service.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>Carregando serviços...</option>
+                )}
               </select>
+              {/* Debug info */}
+              <small style={{color: '#666', fontSize: '12px'}}>
+                Debug: {services.length} serviços carregados
+              </small>
             </div>
             <div className="form-group">
               <label>Status:</label>
