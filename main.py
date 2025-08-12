@@ -958,6 +958,92 @@ async def update_process(process_id: int, request: Request, db_session=Depends(g
         db_session.rollback()
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
+@app.post("/api/admin/clients/{client_id}/cases")
+async def create_client_case(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Criar um novo caso para um cliente (admin)"""
+    try:
+        print(f"🚀 CRIANDO CASO PARA CLIENTE {client_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Obter dados do request
+        case_data = await request.json()
+        print(f"📝 Dados do caso: {case_data}")
+
+        # Verificar se cliente existe
+        check_client = db_session.execute(text("SELECT id FROM users WHERE id = :client_id AND type = 'cliente'"),
+                                        {"client_id": client_id})
+        if not check_client.fetchone():
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        # Inserir novo caso
+        insert_query = """
+        INSERT INTO client_cases (client_id, title, description, status, service_id, created_at)
+        VALUES (:client_id, :title, :description, :status, :service_id, NOW())
+        """
+
+        case_params = {
+            "client_id": client_id,
+            "title": case_data.get('title', 'Novo Caso'),
+            "description": case_data.get('description', ''),
+            "status": case_data.get('status', 'pendente'),
+            "service_id": case_data.get('service_id', None)
+        }
+
+        print(f"📝 Parâmetros do caso: {case_params}")
+
+        result = db_session.execute(text(insert_query), case_params)
+        db_session.commit()
+
+        # Obter ID do caso criado
+        case_id = result.lastrowid
+        print(f"✅ Caso criado com ID: {case_id}")
+
+        # Buscar caso criado com dados completos
+        select_query = """
+        SELECT cc.id, cc.title, cc.description, cc.status, cc.created_at, cc.client_id, cc.service_id,
+               u.name as client_name, u.email as client_email,
+               s.name as service_name
+        FROM client_cases cc
+        LEFT JOIN users u ON cc.client_id = u.id
+        LEFT JOIN services s ON cc.service_id = s.id
+        WHERE cc.id = :case_id
+        """
+
+        case_result = db_session.execute(text(select_query), {"case_id": case_id})
+        created_case = case_result.fetchone()
+
+        if not created_case:
+            raise HTTPException(status_code=500, detail="Erro ao buscar caso criado")
+
+        response_data = {
+            'id': created_case.id,
+            'title': created_case.title,
+            'description': created_case.description,
+            'status': created_case.status,
+            'created_at': created_case.created_at.isoformat() if created_case.created_at else None,
+            'client_id': created_case.client_id,
+            'service_id': created_case.service_id,
+            'client_name': created_case.client_name,
+            'client_email': created_case.client_email,
+            'service_name': created_case.service_name
+        }
+
+        print(f"✅ SUCESSO! Caso {case_id} criado para cliente {client_id}")
+        return {"data": response_data}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"❌ ERRO ao criar caso: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=str(e))
+
 if __name__ == "__main__":
     # Configurar porta para Railway (usa PORT do ambiente ou 5000 como fallback)
     port = int(os.getenv("PORT", 5000))
