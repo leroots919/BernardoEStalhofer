@@ -123,6 +123,38 @@ async def debug_routes():
         "timestamp": "2024-12-21"
     }
 
+@app.get("/api/debug/data")
+async def debug_data(db_session=Depends(get_db)):
+    """Debug - verificar dados no banco"""
+    try:
+        # Contar usuários
+        users_result = db_session.execute(text("SELECT COUNT(*) as count FROM users"))
+        users_count = users_result.fetchone().count
+
+        # Contar clientes
+        clients_result = db_session.execute(text("SELECT COUNT(*) as count FROM users WHERE type = 'cliente'"))
+        clients_count = clients_result.fetchone().count
+
+        # Contar casos
+        cases_result = db_session.execute(text("SELECT COUNT(*) as count FROM client_cases"))
+        cases_count = cases_result.fetchone().count
+
+        # Listar alguns clientes
+        clients_list_result = db_session.execute(text("SELECT id, name, email, type FROM users WHERE type = 'cliente' LIMIT 5"))
+        clients_list = [{"id": row.id, "name": row.name, "email": row.email, "type": row.type} for row in clients_list_result.fetchall()]
+
+        return {
+            "database_info": {
+                "total_users": users_count,
+                "total_clients": clients_count,
+                "total_cases": cases_count
+            },
+            "sample_clients": clients_list,
+            "timestamp": "2024-12-21"
+        }
+    except Exception as e:
+        return {"error": str(e), "timestamp": "2024-12-21"}
+
 @app.post("/api/auth/login")
 async def login(user_data: UserLogin, db_session=Depends(get_db)):
     """Login de usuário"""
