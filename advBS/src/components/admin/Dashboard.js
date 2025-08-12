@@ -46,30 +46,40 @@ const Dashboard = () => {
       console.log('🔍 Estrutura clientsResponse.data:', clientsResponse?.data);
       console.log('🔍 Estrutura casesResponse.data:', casesResponse?.data);
 
-      // Extrair dados das respostas - corrigir duplo data
-      const clients = clientsResponse?.data?.data || clientsResponse?.data || [];
-      const cases = casesResponse?.data?.data || casesResponse?.data || [];
+      // Extrair dados das respostas - corrigir duplo data do axios
+      // API retorna {data: Array}, axios encapsula em {data: {data: Array}}
+      let clients = [];
+      let cases = [];
+
+      if (clientsResponse?.data?.data && Array.isArray(clientsResponse.data.data)) {
+        clients = clientsResponse.data.data;
+      } else if (clientsResponse?.data && Array.isArray(clientsResponse.data)) {
+        clients = clientsResponse.data;
+      }
+
+      if (casesResponse?.data?.data && Array.isArray(casesResponse.data.data)) {
+        cases = casesResponse.data.data;
+      } else if (casesResponse?.data && Array.isArray(casesResponse.data)) {
+        cases = casesResponse.data;
+      }
 
       console.log('✅ Clientes recebidos:', clients);
       console.log('✅ Casos recebidos:', cases);
       console.log('🔍 Tipo de clients:', typeof clients, Array.isArray(clients));
       console.log('🔍 Tipo de cases:', typeof cases, Array.isArray(cases));
 
-      const clientsArray = Array.isArray(clients) ? clients : [];
-      const casesArray = Array.isArray(cases) ? cases : [];
-
       const newStats = {
-        totalClients: clientsArray.length,
-        activeCases: casesArray.filter(c => c && c.status === 'em_andamento').length,
-        pendingCases: casesArray.filter(c => c && c.status === 'pendente').length,
-        completedCases: casesArray.filter(c => c && c.status === 'concluido').length
+        totalClients: clients.length,
+        activeCases: cases.filter(c => c && c.status === 'em_andamento').length,
+        pendingCases: cases.filter(c => c && c.status === 'pendente').length,
+        completedCases: cases.filter(c => c && c.status === 'concluido').length
       };
 
       console.log('📊 Stats calculadas:', newStats);
       setStats(newStats);
 
       // Últimos 5 clientes cadastrados
-      const recentClientsData = clientsArray.slice(-5).reverse();
+      const recentClientsData = clients.slice(-5).reverse();
       console.log('👥 Clientes recentes:', recentClientsData);
       setRecentClients(recentClientsData);
       console.log('✅ Dashboard data carregado com sucesso!');
