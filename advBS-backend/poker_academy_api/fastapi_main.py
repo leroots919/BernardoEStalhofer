@@ -289,7 +289,7 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
         total_clients = db_session.query(Users).filter(Users.type == 'cliente').count()
         print(f"👥 Total de clientes na base: {total_clients}")
 
-        # Usar SQL raw para buscar clientes (sem created_at que não existe)
+        # Usar SQL raw para buscar clientes (CORRIGIDO: sem created_at que não existe)
         query = text("""
         SELECT id, name, email, phone, cpf, register_date, type
         FROM users
