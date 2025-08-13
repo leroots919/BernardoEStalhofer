@@ -375,7 +375,7 @@ async def create_client(client_data: ClientCreate, db_session=Depends(get_db), c
 
         query = text("""
         INSERT INTO users (name, email, phone, cpf, address, city, state, zip_code, type, password_hash, register_date)
-        VALUES (:name, :email, :phone, :cpf, :address, :city, :state, :zip_code, 'cliente', :password, NOW())
+        VALUES (:name, :email, :phone, :cpf, :address, :city, :state, :zip_code, 'cliente', :password_hash, NOW())
         """)
 
         result = db_session.execute(query, {
@@ -387,7 +387,7 @@ async def create_client(client_data: ClientCreate, db_session=Depends(get_db), c
             'city': '',  # Campos vazios por enquanto
             'state': '',
             'zip_code': '',
-            'password': client_data.password
+            'password_hash': client_data.password
         })
 
         db_session.commit()
