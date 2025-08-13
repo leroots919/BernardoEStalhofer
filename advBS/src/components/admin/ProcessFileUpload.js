@@ -26,6 +26,7 @@ const ProcessFileUpload = () => {
 
   const fetchData = async () => {
     try {
+      console.log('🚀 LOADFILES EXECUTADO - VERSÃO DEBUG v3.0');
       setLoading(true);
       // Só carrega arquivos inicialmente, não todos os clientes
       const response = await api.get('/api/admin/process-files');
