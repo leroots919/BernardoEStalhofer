@@ -727,8 +727,8 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
 
         # Buscar todos os arquivos com informações do cliente e caso
         query = """
-        SELECT pf.id, pf.case_id, pf.file_name, pf.original_name, pf.file_size,
-               pf.upload_date, pf.file_type, pf.user_id,
+        SELECT pf.id, pf.case_id, pf.filename, pf.original_filename, pf.user_id,
+               pf.created_at, pf.file_path, pf.description,
                COALESCE(u.name, 'Cliente não encontrado') as client_name,
                COALESCE(u.email, '') as client_email,
                COALESCE(cc.title, 'Caso não encontrado') as case_title,
@@ -736,7 +736,7 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
         FROM process_files pf
         LEFT JOIN users u ON pf.user_id = u.id
         LEFT JOIN client_cases cc ON pf.case_id = cc.id
-        ORDER BY pf.upload_date DESC
+        ORDER BY pf.created_at DESC
         """
         result = db_session.execute(text(query))
         files = result.fetchall()
@@ -746,11 +746,11 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
             files_list.append({
                 'id': file.id,
                 'case_id': file.case_id,
-                'file_name': file.file_name,
-                'original_name': file.original_name,
-                'file_size': file.file_size,
-                'upload_date': file.upload_date.isoformat() if file.upload_date else None,
-                'file_type': file.file_type,
+                'file_name': file.filename,
+                'original_name': file.original_filename,
+                'file_path': file.file_path,
+                'description': file.description,
+                'upload_date': file.created_at.isoformat() if file.created_at else None,
                 'user_id': file.user_id,
                 'client_name': file.client_name,
                 'client_email': file.client_email,
@@ -824,23 +824,22 @@ async def upload_process_file(
         # Salvar informações no banco de dados
         insert_query = """
         INSERT INTO process_files (
-            user_id, case_id, file_name, original_name, file_path,
-            file_size, file_type, description, upload_date
+            user_id, case_id, filename, original_filename, file_path,
+            description, uploaded_by_admin, created_at
         ) VALUES (
-            :user_id, :case_id, :file_name, :original_name, :file_path,
-            :file_size, :file_type, :description, NOW()
+            :user_id, :case_id, :filename, :original_filename, :file_path,
+            :description, :uploaded_by_admin, NOW()
         )
         """
 
         db_session.execute(text(insert_query), {
             "user_id": int(client_id),
             "case_id": int(case_id) if case_id else None,
-            "file_name": unique_filename,
-            "original_name": file.filename,
+            "filename": unique_filename,
+            "original_filename": file.filename,
             "file_path": file_path,
-            "file_size": len(content),
-            "file_type": file.content_type,
-            "description": description
+            "description": description,
+            "uploaded_by_admin": current_user.get('user_id', 1)
         })
         db_session.commit()
 
