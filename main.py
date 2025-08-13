@@ -810,7 +810,7 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
                 'email': client.email,
                 'phone': client.phone,
                 'cpf': client.cpf,
-                'created_at': client.created_at.isoformat() if client.created_at else None,
+                'created_at': client.register_date.isoformat() if client.register_date else None,
                 'type': client.type
             })
 
