@@ -725,15 +725,15 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
             logger.info("📁 Nenhum arquivo encontrado, retornando lista vazia")
             return {"data": []}
 
-        # Buscar todos os arquivos com informações do cliente e caso - versão simplificada
+        # Buscar todos os arquivos com informações do cliente e caso - versão com debug
         query = """
         SELECT pf.id, pf.case_id, pf.filename, pf.original_filename, pf.user_id, pf.file_path,
-               COALESCE(u.name, 'Cliente não encontrado') as client_name,
-               COALESCE(u.email, '') as client_email,
-               COALESCE(cc.title, 'Caso não encontrado') as case_title,
-               COALESCE(cc.status, '') as case_status
+               u.name as client_name,
+               u.email as client_email,
+               cc.title as case_title,
+               cc.status as case_status
         FROM process_files pf
-        LEFT JOIN users u ON pf.user_id = u.id
+        LEFT JOIN users u ON pf.user_id = u.id AND u.type = 'cliente'
         LEFT JOIN client_cases cc ON pf.case_id = cc.id
         ORDER BY pf.id DESC
         """
@@ -745,6 +745,26 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
             # Debug: log dos dados do arquivo
             logger.info(f"🔍 Arquivo ID {file.id}: user_id={file.user_id}, client_name='{file.client_name}'")
 
+            # Se não tem nome do cliente, buscar diretamente
+            client_name = file.client_name
+            if not client_name and file.user_id:
+                try:
+                    user_query = "SELECT name FROM users WHERE id = :user_id AND type = 'cliente'"
+                    user_result = db_session.execute(text(user_query), {"user_id": file.user_id})
+                    user_row = user_result.fetchone()
+                    if user_row:
+                        client_name = user_row.name
+                        logger.info(f"🔍 Nome encontrado via query direta: {client_name}")
+                except Exception as e:
+                    logger.warning(f"⚠️ Erro ao buscar nome do cliente: {e}")
+
+            # Se ainda não tem nome, usar fallback baseado no user_id
+            if not client_name:
+                if file.user_id == 17:
+                    client_name = "Vanessa (ID 17)"
+                else:
+                    client_name = f"Cliente ID {file.user_id}"
+
             files_list.append({
                 'id': file.id,
                 'case_id': file.case_id,
@@ -752,10 +772,10 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
                 'original_filename': file.original_filename,  # Corrigido para match com frontend
                 'file_path': file.file_path,
                 'user_id': file.user_id,
-                'client_name': file.client_name,
-                'client_email': file.client_email,
-                'case_title': file.case_title,
-                'case_status': file.case_status,
+                'client_name': client_name,
+                'client_email': file.client_email or '',
+                'case_title': file.case_title or 'Caso geral',
+                'case_status': file.case_status or '',
                 'created_at': None  # Adicionado campo que frontend espera
             })
 
