@@ -746,13 +746,14 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
                 'id': file.id,
                 'case_id': file.case_id,
                 'file_name': file.filename,
-                'original_name': file.original_filename,
+                'original_filename': file.original_filename,  # Corrigido para match com frontend
                 'file_path': file.file_path,
                 'user_id': file.user_id,
                 'client_name': file.client_name,
                 'client_email': file.client_email,
                 'case_title': file.case_title,
-                'case_status': file.case_status
+                'case_status': file.case_status,
+                'created_at': None  # Adicionado campo que frontend espera
             })
 
         logger.info(f"✅ {len(files_list)} arquivos encontrados")
