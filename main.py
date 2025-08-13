@@ -821,14 +821,12 @@ async def upload_process_file(
 
         logger.info(f"✅ Arquivo salvo: {file_path}")
 
-        # Salvar informações no banco de dados
+        # Salvar informações no banco de dados - versão simplificada
         insert_query = """
         INSERT INTO process_files (
-            user_id, case_id, filename, original_filename, file_path,
-            description, uploaded_by_admin, created_at
+            user_id, case_id, filename, original_filename, file_path
         ) VALUES (
-            :user_id, :case_id, :filename, :original_filename, :file_path,
-            :description, :uploaded_by_admin, NOW()
+            :user_id, :case_id, :filename, :original_filename, :file_path
         )
         """
 
@@ -837,9 +835,7 @@ async def upload_process_file(
             "case_id": int(case_id) if case_id else None,
             "filename": unique_filename,
             "original_filename": file.filename,
-            "file_path": file_path,
-            "description": description,
-            "uploaded_by_admin": current_user.get('user_id', 1)
+            "file_path": file_path
         })
         db_session.commit()
 
