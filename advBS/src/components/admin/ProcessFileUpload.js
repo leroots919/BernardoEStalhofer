@@ -260,27 +260,8 @@ const ProcessFileUpload = () => {
     }
   };
 
-  // Buscar nome do cliente por ID (com cache)
-  const fetchClientName = async (clientId) => {
-    if (clientsCache[clientId]) {
-      return clientsCache[clientId];
-    }
-
-    try {
-      const response = await api.get(`/api/admin/clients/${clientId}`);
-      console.log('👤 Resposta do cliente:', response);
-
-      // A API retorna { data: {...} }, então precisamos acessar response.data
-      const clientData = response.data || {};
-      const clientName = clientData.name || 'Nome não informado';
-
-      setClientsCache(prev => ({ ...prev, [clientId]: clientName }));
-      return clientName;
-    } catch (error) {
-      console.error('Erro ao buscar cliente:', error);
-      return 'Cliente não encontrado';
-    }
-  };
+  // Função fetchClientName removida - não é mais necessária
+  // Agora usamos diretamente file.client_name que vem do backend via JOIN
 
   // Funções removidas: getClientName e getCaseTitle
   // Agora usamos diretamente file.client_name e file.case_title do backend
