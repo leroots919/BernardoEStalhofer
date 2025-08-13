@@ -742,6 +742,9 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
 
         files_list = []
         for file in files:
+            # Debug: log dos dados do arquivo
+            logger.info(f"🔍 Arquivo ID {file.id}: user_id={file.user_id}, client_name='{file.client_name}'")
+
             files_list.append({
                 'id': file.id,
                 'case_id': file.case_id,
@@ -893,6 +896,55 @@ async def debug_table_structure(db_session=Depends(get_db), current_user=Depends
     except Exception as e:
         logger.error(f"❌ Erro ao verificar estrutura: {e}")
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.delete("/api/admin/process-files/{file_id}")
+async def delete_process_file(file_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Deletar arquivo processual"""
+    try:
+        logger.info(f"🗑️ Deletando arquivo ID: {file_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Buscar arquivo para obter o caminho
+        query = "SELECT file_path FROM process_files WHERE id = :file_id"
+        result = db_session.execute(text(query), {"file_id": file_id})
+        file_record = result.fetchone()
+
+        if not file_record:
+            raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+
+        # Deletar arquivo físico se existir
+        file_path = file_record.file_path
+        if file_path and os.path.exists(file_path):
+            try:
+                os.remove(file_path)
+                logger.info(f"🗑️ Arquivo físico deletado: {file_path}")
+            except Exception as e:
+                logger.warning(f"⚠️ Erro ao deletar arquivo físico: {e}")
+
+        # Deletar registro do banco
+        delete_query = "DELETE FROM process_files WHERE id = :file_id"
+        result = db_session.execute(text(delete_query), {"file_id": file_id})
+
+        if result.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Arquivo não encontrado")
+
+        db_session.commit()
+        logger.info(f"✅ Arquivo {file_id} deletado com sucesso")
+
+        return {"message": "Arquivo deletado com sucesso"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao deletar arquivo: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
 @app.get("/api/admin/clients/search")
 async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), current_user=Depends(verify_token)):
