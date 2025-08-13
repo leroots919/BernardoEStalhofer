@@ -865,6 +865,41 @@ async def upload_process_file(
             pass
         raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
+@app.get("/api/admin/debug/table-structure")
+async def debug_table_structure(db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Debug: Verificar estrutura da tabela process_files"""
+    try:
+        logger.info("🔍 Verificando estrutura da tabela process_files...")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Verificar estrutura da tabela
+        describe_query = "DESCRIBE process_files"
+        result = db_session.execute(text(describe_query))
+        columns = result.fetchall()
+
+        columns_info = []
+        for column in columns:
+            columns_info.append({
+                'field': column[0],
+                'type': column[1],
+                'null': column[2],
+                'key': column[3],
+                'default': column[4],
+                'extra': column[5] if len(column) > 5 else None
+            })
+
+        return {
+            "table": "process_files",
+            "columns": columns_info
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Erro ao verificar estrutura: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.get("/api/admin/clients/search")
 async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Buscar clientes por nome ou email (admin)"""
