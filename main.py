@@ -897,6 +897,39 @@ async def debug_table_structure(db_session=Depends(get_db), current_user=Depends
         logger.error(f"❌ Erro ao verificar estrutura: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/admin/debug/users")
+async def debug_users(db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Debug: Verificar usuários cadastrados"""
+    try:
+        logger.info("🔍 Verificando usuários...")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Buscar todos os usuários
+        query = "SELECT id, name, email, type FROM users ORDER BY id"
+        result = db_session.execute(text(query))
+        users = result.fetchall()
+
+        users_list = []
+        for user in users:
+            users_list.append({
+                'id': user.id,
+                'name': user.name,
+                'email': user.email,
+                'type': user.type
+            })
+
+        return {
+            "users": users_list,
+            "total": len(users_list)
+        }
+
+    except Exception as e:
+        logger.error(f"❌ Erro ao verificar usuários: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.delete("/api/admin/process-files/{file_id}")
 async def delete_process_file(file_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Deletar arquivo processual"""
