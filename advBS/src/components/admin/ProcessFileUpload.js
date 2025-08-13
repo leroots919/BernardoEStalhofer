@@ -501,11 +501,11 @@ const ProcessFileUpload = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                         <div className="flex items-center">
                           <User className="h-4 w-4 mr-2" />
-                          {getClientName(file.user_id)}
+                          {file.client_name || 'Cliente não encontrado'}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
-                        {getCaseTitle(file.case_id)}
+                        {file.case_title || 'Caso geral'}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                         {file.created_at ? new Date(file.created_at).toLocaleDateString('pt-BR') : '-'}
