@@ -792,7 +792,7 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
             return {"data": []}
 
         query = """
-        SELECT id, name, email, phone, cpf, created_at, type
+        SELECT id, name, email, phone, cpf, register_date, type
         FROM users
         WHERE type = 'cliente'
         AND (LOWER(name) LIKE LOWER(:search_term) OR LOWER(email) LIKE LOWER(:search_term))
