@@ -36,6 +36,17 @@ const ProcessFileUpload = () => {
       console.log('📁 Arquivos carregados:', filesData);
       console.log('🔍 Tipo de filesData:', typeof filesData, Array.isArray(filesData));
 
+      // Debug: log detalhado de cada arquivo
+      filesData.forEach((file, index) => {
+        console.log(`🔍 Arquivo ${index}:`, {
+          id: file.id,
+          user_id: file.user_id,
+          client_name: file.client_name,
+          original_filename: file.original_filename,
+          case_title: file.case_title
+        });
+      });
+
       setUploadedFiles(filesData);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
