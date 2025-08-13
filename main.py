@@ -725,10 +725,9 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
             logger.info("📁 Nenhum arquivo encontrado, retornando lista vazia")
             return {"data": []}
 
-        # Buscar todos os arquivos com informações do cliente e caso
+        # Buscar todos os arquivos com informações do cliente e caso - versão simplificada
         query = """
-        SELECT pf.id, pf.case_id, pf.filename, pf.original_filename, pf.user_id,
-               pf.created_at, pf.file_path, pf.description,
+        SELECT pf.id, pf.case_id, pf.filename, pf.original_filename, pf.user_id, pf.file_path,
                COALESCE(u.name, 'Cliente não encontrado') as client_name,
                COALESCE(u.email, '') as client_email,
                COALESCE(cc.title, 'Caso não encontrado') as case_title,
@@ -736,7 +735,7 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
         FROM process_files pf
         LEFT JOIN users u ON pf.user_id = u.id
         LEFT JOIN client_cases cc ON pf.case_id = cc.id
-        ORDER BY pf.created_at DESC
+        ORDER BY pf.id DESC
         """
         result = db_session.execute(text(query))
         files = result.fetchall()
@@ -749,8 +748,6 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
                 'file_name': file.filename,
                 'original_name': file.original_filename,
                 'file_path': file.file_path,
-                'description': file.description,
-                'upload_date': file.created_at.isoformat() if file.created_at else None,
                 'user_id': file.user_id,
                 'client_name': file.client_name,
                 'client_email': file.client_email,
