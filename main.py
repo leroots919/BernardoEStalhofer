@@ -949,6 +949,51 @@ async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), cu
         logger.error(f"❌ Erro ao buscar clientes: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
 
+@app.get("/api/admin/clients/{client_id}")
+async def get_client(client_id: int, db_session=Depends(get_db), current_user=Depends(verify_token)):
+    """Buscar cliente específico por ID"""
+    try:
+        logger.info(f"🔍 Buscando cliente ID: {client_id}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Buscar cliente
+        query = """
+        SELECT id, name, email, phone, cpf, address, city, state, zip_code, register_date, type
+        FROM users
+        WHERE id = :client_id AND type = 'cliente'
+        """
+        result = db_session.execute(text(query), {"client_id": client_id})
+        client = result.fetchone()
+
+        if not client:
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        client_data = {
+            'id': client.id,
+            'name': client.name,
+            'email': client.email,
+            'phone': client.phone,
+            'cpf': client.cpf,
+            'address': client.address,
+            'city': client.city,
+            'state': client.state,
+            'zip_code': client.zip_code,
+            'register_date': client.register_date.isoformat() if client.register_date else None,
+            'type': client.type
+        }
+
+        logger.info(f"✅ Cliente encontrado: {client.name}")
+        return {"data": client_data}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro ao buscar cliente: {e}")
+        raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
 @app.put("/api/admin/clients/{client_id}")
 async def update_client(client_id: int, request: Request, db_session=Depends(get_db), current_user=Depends(verify_token)):
     """Atualizar dados de um cliente (admin) - Versão Ultra Simples"""
