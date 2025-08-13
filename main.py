@@ -899,14 +899,19 @@ async def create_client(request: Request, db_session=Depends(get_db), current_us
         data = await request.json()
         print(f"📝 Dados do cliente: {data}")
 
-        # Insert simples
-        query = "INSERT INTO users (name, email, phone, cpf, type, password, created_at) VALUES (:name, :email, :phone, :cpf, 'cliente', 'cliente123', NOW())"
+        # Insert usando as colunas corretas da tabela
+        query = "INSERT INTO users (name, email, phone, cpf, address, city, state, zip_code, type, password_hash, register_date) VALUES (:name, :email, :phone, :cpf, :address, :city, :state, :zip_code, 'cliente', :password_hash, NOW())"
 
         result = db_session.execute(text(query), {
             "name": data.get('name', ''),
             "email": data.get('email', ''),
             "phone": data.get('phone', ''),
-            "cpf": data.get('cpf', '')
+            "cpf": data.get('cpf', ''),
+            "address": data.get('address', ''),
+            "city": data.get('city', ''),
+            "state": data.get('state', ''),
+            "zip_code": data.get('zip_code', ''),
+            "password_hash": data.get('password', 'temp123')
         })
 
         db_session.commit()
