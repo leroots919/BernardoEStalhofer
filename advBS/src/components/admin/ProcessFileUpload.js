@@ -58,8 +58,8 @@ const ProcessFileUpload = () => {
       const response = await api.get(`/api/admin/clients/search?q=${encodeURIComponent(searchTerm)}&limit=10`);
       console.log('🔍 Resposta da busca de clientes:', response);
 
-      // A API retorna { data: [...] }, então precisamos acessar response.data
-      const clientsData = response.data || [];
+      // A API retorna { data: { data: [...] } }, então precisamos acessar response.data.data
+      const clientsData = response.data?.data || [];
       console.log('👥 Clientes encontrados:', clientsData);
 
       setClients(clientsData);
