@@ -282,21 +282,8 @@ const ProcessFileUpload = () => {
     }
   };
 
-  const getClientName = (clientId) => {
-    if (clientsCache[clientId]) {
-      return clientsCache[clientId];
-    }
-
-    // Se não está no cache, buscar e retornar placeholder temporário
-    fetchClientName(clientId);
-    return `Carregando...`;
-  };
-
-  const getCaseTitle = (caseId) => {
-    if (!cases || !Array.isArray(cases) || !caseId) return 'Caso geral';
-    const case_ = cases.find(c => c && c.id === caseId);
-    return case_ ? (case_.title || 'Título não informado') : 'Caso geral';
-  };
+  // Funções removidas: getClientName e getCaseTitle
+  // Agora usamos diretamente file.client_name e file.case_title do backend
 
   // const getStatusBadge = (status) => {
   //   const statusConfig = {
