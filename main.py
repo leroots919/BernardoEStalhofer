@@ -8,7 +8,7 @@ from pathlib import Path
 # Adicionar o diretório src ao path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'src'))
 
-from fastapi import FastAPI, HTTPException, Depends, Header, Form, Request
+from fastapi import FastAPI, HTTPException, Depends, Header, Form, Request, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -766,6 +766,105 @@ async def get_process_files(db_session=Depends(get_db), current_user=Depends(ver
     except Exception as e:
         logger.error(f"❌ Erro ao buscar arquivos: {e}")
         raise HTTPException(status_code=500, detail="Erro interno do servidor")
+
+@app.post("/api/admin/process-files")
+async def upload_process_file(
+    file: UploadFile = File(...),
+    client_id: str = Form(...),
+    case_id: str = Form(None),
+    description: str = Form(""),
+    db_session=Depends(get_db),
+    current_user=Depends(verify_token)
+):
+    """Upload de arquivo de processo"""
+    try:
+        logger.info(f"🚀 Recebendo upload de arquivo:")
+        logger.info(f"   📁 Arquivo: {file.filename}")
+        logger.info(f"   👤 Cliente ID: {client_id}")
+        logger.info(f"   📋 Caso ID: {case_id}")
+        logger.info(f"   📝 Descrição: {description}")
+        logger.info(f"   🔑 Usuário: {current_user.get('email', 'N/A')}")
+
+        # Verificar se é admin
+        if current_user.get('type') != 'admin':
+            raise HTTPException(status_code=403, detail="Acesso negado")
+
+        # Validações
+        if not file.filename:
+            raise HTTPException(status_code=400, detail="Nenhum arquivo selecionado")
+
+        # Verificar se cliente existe
+        client_query = "SELECT id, name FROM users WHERE id = :client_id AND type = 'cliente'"
+        client_result = db_session.execute(text(client_query), {"client_id": int(client_id)})
+        client = client_result.fetchone()
+
+        if not client:
+            raise HTTPException(status_code=404, detail="Cliente não encontrado")
+
+        # Criar diretório de upload se não existir
+        import os
+        from datetime import datetime
+
+        upload_dir = "uploads/process_files"
+        os.makedirs(upload_dir, exist_ok=True)
+
+        # Gerar nome único para o arquivo
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_extension = os.path.splitext(file.filename)[1]
+        unique_filename = f"{timestamp}_{client_id}_{file.filename}"
+        file_path = os.path.join(upload_dir, unique_filename)
+
+        # Salvar arquivo
+        with open(file_path, "wb") as buffer:
+            content = await file.read()
+            buffer.write(content)
+
+        logger.info(f"✅ Arquivo salvo: {file_path}")
+
+        # Salvar informações no banco de dados
+        insert_query = """
+        INSERT INTO process_files (
+            user_id, case_id, file_name, original_name, file_path,
+            file_size, file_type, description, upload_date
+        ) VALUES (
+            :user_id, :case_id, :file_name, :original_name, :file_path,
+            :file_size, :file_type, :description, NOW()
+        )
+        """
+
+        db_session.execute(text(insert_query), {
+            "user_id": int(client_id),
+            "case_id": int(case_id) if case_id else None,
+            "file_name": unique_filename,
+            "original_name": file.filename,
+            "file_path": file_path,
+            "file_size": len(content),
+            "file_type": file.content_type,
+            "description": description
+        })
+        db_session.commit()
+
+        logger.info(f"✅ Arquivo salvo no banco de dados!")
+
+        return {
+            "message": "Arquivo enviado com sucesso",
+            "file": {
+                "filename": unique_filename,
+                "original_name": file.filename,
+                "file_size": len(content),
+                "client_name": client.name
+            }
+        }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"❌ Erro no upload: {e}")
+        try:
+            db_session.rollback()
+        except:
+            pass
+        raise HTTPException(status_code=500, detail=f"Erro interno do servidor: {str(e)}")
 
 @app.get("/api/admin/clients/search")
 async def search_clients(q: str, limit: int = 10, db_session=Depends(get_db), current_user=Depends(verify_token)):
