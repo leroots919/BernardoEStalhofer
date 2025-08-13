@@ -144,7 +144,11 @@ const ProcessFileUpload = () => {
       const token = localStorage.getItem('advbs_token');
       console.log('🔑 Token:', token ? 'presente' : 'ausente');
 
-      const response = await fetch('http://localhost:8000/api/admin/process-files', {
+      const API_BASE_URL = process.env.NODE_ENV === 'production'
+        ? 'https://bernardoestalhofer-production.up.railway.app'
+        : 'http://localhost:8000';
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/process-files`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -202,7 +206,12 @@ const ProcessFileUpload = () => {
       console.log(`🔽 Iniciando download do arquivo ID: ${fileId}`);
 
       const token = sessionStorage.getItem('advbs_token');
-      const response = await fetch(`http://localhost:5000/api/admin/process-files/${fileId}/download`, {
+
+      const API_BASE_URL = process.env.NODE_ENV === 'production'
+        ? 'https://bernardoestalhofer-production.up.railway.app'
+        : 'http://localhost:8000';
+
+      const response = await fetch(`${API_BASE_URL}/api/admin/process-files/${fileId}/download`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
