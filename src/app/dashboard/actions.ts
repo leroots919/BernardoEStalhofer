@@ -9,7 +9,7 @@ export type ActionResponse = {
   message: string
 }
 
-export async function createCase(formData: FormData): Promise<ActionResponse> {
+export async function createCase(state: ActionResponse, formData: FormData): Promise<ActionResponse> {
   const supabase = await createClient()
 
   const title = formData.get('title') as string
