@@ -3,13 +3,13 @@ import { ArrowRight, CheckCircle2, Star, MessageCircle, Instagram, Facebook } fr
 
 export default function LandingPage() {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 text-slate-900 font-sans">
+    <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans">
       {/* Navbar */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-16 items-center">
             <div className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
+              <div className="w-10 h-10 bg-brand-primary rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-primary/20">
                 BS
               </div>
               <span className="font-serif font-bold text-xl tracking-tight text-slate-900 hidden sm:block">
@@ -26,7 +26,7 @@ export default function LandingPage() {
 
             <Link
               href="/login"
-              className="bg-brand-primary text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-brand-primary transition-all shadow-sm hover:shadow-brand-primary/20"
+              className="bg-brand-primary text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-brand-primary/90 transition-all shadow-md hover:shadow-brand-primary/30"
             >
               Login
             </Link>
@@ -35,10 +35,10 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-20 pb-32 overflow-hidden">
+      <section className="relative pt-20 pb-32 overflow-hidden bg-gradient-to-b from-blue-50 to-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/20 rounded-full blur-3xl opacity-50" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-100 rounded-full blur-3xl opacity-50" />
+          <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-brand-primary/10 rounded-full blur-3xl opacity-60" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-200/20 rounded-full blur-3xl opacity-60" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -60,21 +60,21 @@ export default function LandingPage() {
             <a
               href="https://api.whatsapp.com/send/?phone=5551993577272&text=Ol%C3%A1%2C+gostaria+de+uma+avalia%C3%A7%C3%A3o+do+meu+caso"
               target="_blank"
-              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-brand-primary transition-all shadow-xl shadow-brand-primary/20 group"
+              className="w-full sm:w-auto flex items-center justify-center gap-2 bg-brand-primary text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-brand-primary/90 transition-all shadow-xl shadow-brand-primary/30 group"
             >
               Fale com um especialista
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </a>
             <a
               href="#about"
-              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg text-slate-700 hover:bg-slate-100 transition-all"
+              className="w-full sm:w-auto px-8 py-4 rounded-xl font-bold text-lg text-slate-700 hover:bg-slate-100 transition-all border border-slate-200"
             >
               Conheça nosso trabalho
             </a>
           </div>
 
           {/* Quick Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto p-8 bg-white rounded-3xl shadow-xl border border-slate-100">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-8 max-w-4xl mx-auto p-8 bg-white rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100">
             <div className="text-center">
               <div className="text-3xl font-bold text-slate-900 mb-1">500+</div>
               <div className="text-sm text-slate-500 font-medium">Casos Resolvidos</div>
@@ -92,14 +92,14 @@ export default function LandingPage() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 bg-white">
+      <section id="services" className="py-24 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-serif font-bold text-slate-900 mb-4">Nossos Serviços</h2>
             <div className="w-20 h-1.5 bg-brand-primary mx-auto rounded-full" />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
                 title: 'Recursos de Multas',
@@ -122,7 +122,7 @@ export default function LandingPage() {
                 icon: '⚖️'
               },
             ].map((service, idx) => (
-              <div key={idx} className="p-8 rounded-2xl border border-slate-100 bg-slate-50 hover:bg-white hover:shadow-xl transition-all group">
+              <div key={idx} className="p-8 rounded-2xl border border-slate-200 bg-white hover:border-brand-primary/50 hover:shadow-xl transition-all group shadow-sm">
                 <div className="text-4xl mb-6 group-hover:scale-110 transition-transform duration-300">{service.icon}</div>
                 <h3 className="text-xl font-bold text-slate-900 mb-3">{service.title}</h3>
                 <p className="text-slate-600 leading-relaxed">{service.desc}</p>
@@ -133,7 +133,7 @@ export default function LandingPage() {
       </section>
 
       {/* About Section */}
-      <section id="about" className="py-24 bg-slate-50">
+      <section id="about" className="py-24 bg-blue-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="space-y-8">
@@ -154,7 +154,7 @@ export default function LandingPage() {
                 </p>
               </div>
 
-              <div className="flex items-center gap-4 p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-4 p-6 bg-white rounded-2xl border border-slate-200 shadow-md">
                 <div className="flex-shrink-0 w-12 h-12 bg-brand-primary/20 rounded-full flex items-center justify-center text-brand-primary">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
@@ -244,7 +244,7 @@ export default function LandingPage() {
                 icon: '💳'
               },
             ].map((item, idx) => (
-              <div key={idx} className="p-8 rounded-3xl border border-slate-100 bg-slate-50 hover:bg-brand-primary/10 transition-colors group">
+              <div key={idx} className="p-8 rounded-3xl border border-slate-200 bg-slate-50 hover:bg-brand-primary/5 transition-colors group shadow-sm hover:shadow-md">
                 <div className="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform">
                   {item.icon}
                 </div>
@@ -265,7 +265,7 @@ export default function LandingPage() {
           </div>
 
           <div className="max-w-3xl mx-auto text-center mb-16">
-            <h3 className="text-2xl font-bold mb-6 text-brand-primary/50">Escritório de Advocacia Especializado em Direito de Trânsito</h3>
+            <h3 className="text-2xl font-bold mb-6 text-brand-primary/80">Escritório de Advocacia Especializado em Direito de Trânsito</h3>
             <p className="text-lg text-slate-300 leading-relaxed mb-6">
               Temos a Experiência para Resolver Casos Complexos, incluindo CNH Cassada, Suspensa, Bloqueada,
               além de Cancelamento de Multa por Dirigir com a CNH Suspensa.
@@ -274,7 +274,7 @@ export default function LandingPage() {
               Atuamos há mais de 10 anos na Defesa do Direito de Dirigir, Ajudando Condutores a Manterem
               o Direito e a Liberdade de Dirigir.
             </p>
-            <div className="inline-block px-6 py-3 rounded-full bg-brand-primary text-white font-bold text-lg animate-bounce">
+            <div className="inline-block px-6 py-3 rounded-full bg-brand-primary text-white font-bold text-lg animate-bounce shadow-lg shadow-brand-primary/30">
               Conte com a Nossa Experiência e Continue Dirigindo!
             </div>
           </div>
@@ -284,7 +284,7 @@ export default function LandingPage() {
               { name: 'Dr. Lucas Bernardo', oab: 'OAB/RS 102.336', icon: '👨‍💼' },
               { name: 'Dra. Sônia Stahlhöfer', oab: 'OAB/RS 110.390', icon: '👩‍💼' },
             ].map((lawyer, idx) => (
-              <div key={idx} className="p-8 rounded-2xl bg-slate-800 border border-slate-700 flex items-center gap-6 hover:bg-slate-700 transition-all">
+              <div key={idx} className="p-8 rounded-2xl bg-slate-800 border border-slate-700 flex items-center gap-6 hover:bg-slate-700 transition-all shadow-lg">
                 <div className="text-5xl">{lawyer.icon}</div>
                 <div>
                   <h4 className="text-xl font-bold">{lawyer.name}</h4>
