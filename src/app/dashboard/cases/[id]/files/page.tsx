@@ -1,6 +1,4 @@
-'use client'
-
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, use } from 'react'
 import { uploadFile, getFileUrl, deleteFile } from '@/lib/supabase/storage'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -21,7 +19,10 @@ interface CaseFile {
   created_at: string
 }
 
-export default function CaseFilesPage({ params }: { params: { id: string } }) {
+export default function CaseFilesPage({ params }: { params: Promise<{ id: string }> }) {
+  const resolvedParams = use(params)
+  const id = resolvedParams.id
+
   const [files, setFiles] = useState<CaseFile[]>([])
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -29,13 +30,13 @@ export default function CaseFilesPage({ params }: { params: { id: string } }) {
 
   useEffect(() => {
     fetchFiles()
-  }, [params.id])
+  }, [id])
 
   async function fetchFiles() {
     const { data, error: fetchError } = await supabase
       .from('process_files')
       .select('*')
-      .eq('case_id', params.id)
+      .eq('case_id', id)
       .order('created_at', { ascending: false })
 
     if (fetchError) {
@@ -56,7 +57,7 @@ export default function CaseFilesPage({ params }: { params: { id: string } }) {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Você precisa estar autenticado para enviar arquivos')
 
-      await uploadFile(file, params.id, user.id)
+      await uploadFile(file, id, user.id)
       await fetchFiles()
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Erro ao enviar arquivo'
@@ -82,7 +83,7 @@ export default function CaseFilesPage({ params }: { params: { id: string } }) {
     <div className="max-w-5xl mx-auto p-8 space-y-8">
       <div className="flex items-center gap-4">
         <Link
-          href={`/dashboard/cases/${params.id}`}
+          href={`/dashboard/cases/${id}`}
           className="p-2 rounded-lg bg-white border border-slate-200 text-slate-600 hover:text-brand-primary transition-all shadow-sm"
         >
           <ArrowLeft className="w-5 h-5" />

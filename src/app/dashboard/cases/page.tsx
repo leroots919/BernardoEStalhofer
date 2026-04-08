@@ -16,10 +16,11 @@ import Link from 'next/link'
 export default async function CasesPage({
   searchParams,
 }: {
-  searchParams: { status?: string }
+  searchParams: Promise<{ status?: string }>
 }) {
   const supabase = await createClient()
-  const currentStatus = searchParams.status
+  const resolvedSearchParams = await searchParams
+  const currentStatus = resolvedSearchParams.status
 
   // Fetch cases with joined data
   const { data: cases, error } = await supabase
