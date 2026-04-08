@@ -1,4 +1,6 @@
-import React, { useState, useEffect, use } from 'react'
+'use client'
+
+import React, { useState, useEffect } from 'react'
 import { uploadFile, getFileUrl, deleteFile } from '@/lib/supabase/storage'
 import { createClient } from '@/lib/supabase/client'
 import {
@@ -11,6 +13,7 @@ import {
   ArrowLeft
 } from 'lucide-react'
 import Link from 'next/link'
+import { useParams } from 'next/navigation'
 
 interface CaseFile {
   id: string
@@ -19,9 +22,9 @@ interface CaseFile {
   created_at: string
 }
 
-export default function CaseFilesPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params)
-  const id = resolvedParams.id
+export default function CaseFilesPage() {
+  const params = useParams()
+  const id = params.id as string
 
   const [files, setFiles] = useState<CaseFile[]>([])
   const [uploading, setUploading] = useState(false)
