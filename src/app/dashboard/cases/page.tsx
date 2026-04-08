@@ -13,6 +13,16 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 
+interface CaseItem {
+  id: string
+  title: string
+  status: string
+  created_at: string
+  updated_at: string
+  profiles: { name: string; email: string } | { name: string; email: string }[]
+  services: { name: string } | { name: string }[]
+}
+
 export default async function CasesPage({
   searchParams,
 }: {
@@ -45,9 +55,9 @@ export default async function CasesPage({
   }
 
   // Filter locally for simplicity in this demo, or we could do it via Supabase
-  const filteredCases = currentStatus
+  const filteredCases = (currentStatus
     ? cases?.filter(c => c.status === currentStatus)
-    : cases
+    : cases) as CaseItem[] | null
 
   const statusOptions = [
     { value: 'pendente', label: 'Pendentes', icon: Clock, color: 'text-amber-600 bg-amber-50 border-amber-200' },
@@ -125,7 +135,7 @@ export default async function CasesPage({
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-slate-600">
-                        {(Array.isArray(caseItem.profiles) ? caseItem.profiles[0]?.name : caseItem.profiles?.name) || 'N/A'}
+                        {(Array.isArray(caseItem.profiles) ? (caseItem.profiles[0] as {name: string})?.name : (caseItem.profiles as {name: string})?.name) || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4">
