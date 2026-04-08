@@ -61,12 +61,12 @@ export default function LandingPage() {
             🏆 Especialistas em Direito de Trânsito
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-serif font-bold text-slate-900 mb-8 leading-[1.1] tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-6 leading-[1.1] tracking-tight">
             Defendemos seus direitos com <br />
             <span className="text-brand-primary italic">excelência jurídica</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-xl text-slate-600 mb-12 leading-relaxed font-medium">
+          <p className="max-w-2xl mx-auto text-xl text-slate-600 mb-8 leading-relaxed font-medium">
             Somos especialistas em reverter multas injustas, defender contra suspensão da CNH e oferecer consultoria jurídica completa com atendimento 100% personalizado.
           </p>
 
