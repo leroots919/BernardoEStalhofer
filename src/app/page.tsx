@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { ArrowRight, CheckCircle2, Star, MessageCircle, Instagram, Facebook } from 'lucide-react'
 
@@ -9,12 +10,13 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 bg-brand-primary rounded-xl flex items-center justify-center text-white font-bold text-xl shadow-lg shadow-brand-primary/20 ring-4 ring-brand-primary/10">
-                BS
-              </div>
-              <span className="font-serif font-bold text-2xl tracking-tight text-slate-900 hidden sm:block">
-                Bernardo & Stahlhöfer
-              </span>
+              <Image
+                src="/bs-logo.png"
+                alt="Bernardo & Stahlhöfer Logo"
+                width={200}
+                height={50}
+                className="h-11 w-auto object-contain"
+              />
             </div>
 
             <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-600">
@@ -315,8 +317,13 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
             <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 bg-brand-primary rounded-lg flex items-center justify-center text-white font-bold text-sm">BS</div>
-                <span className="font-serif font-bold text-xl text-slate-900">Bernardo & Stahlhöfer</span>
+                <Image
+                  src="/bs-logo.png"
+                  alt="Bernardo & Stahlhöfer Logo"
+                  width={150}
+                  height={40}
+                  className="h-9 w-auto object-contain"
+                />
               </div>
               <p className="text-slate-600 text-sm leading-relaxed">
                 Advocacia de Trânsito é uma Sociedade de Advogados inscrita na OAB/RS. 9.012 e CNPJ sob o n° 34150.525000125
