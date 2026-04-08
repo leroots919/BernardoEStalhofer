@@ -49,24 +49,24 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative pt-32 pb-40 overflow-hidden bg-gradient-to-b from-blue-50/50 via-white to-white">
+      <section className="relative pt-32 pb-40 overflow-hidden bg-brand-dark text-white">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
-          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/10 rounded-full blur-[120px] opacity-60" />
-          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-100 rounded-full blur-[120px] opacity-60" />
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-brand-primary/20 rounded-full blur-[120px] opacity-60" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-blue-900/30 rounded-full blur-[120px] opacity-60" />
         </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white text-brand-primary text-xs font-bold uppercase tracking-widest mb-8 border border-brand-primary/20 shadow-sm animate-fade-in">
-            <span className="flex h-2 w-2 rounded-full bg-brand-primary animate-pulse" />
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-primary text-white text-xs font-bold uppercase tracking-widest mb-8 border border-brand-primary/30 shadow-sm animate-fade-in">
+            <span className="flex h-2 w-2 rounded-full bg-white animate-pulse" />
             🏆 Especialistas em Direito de Trânsito
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-serif font-bold text-slate-900 mb-6 leading-[1.1] tracking-tight">
+          <h1 className="text-4xl md:text-6xl font-serif font-bold text-white mb-6 leading-[1.1] tracking-tight">
             Defendemos seus direitos com <br />
             <span className="text-brand-primary italic">excelência jurídica</span>
           </h1>
 
-          <p className="max-w-2xl mx-auto text-xl text-slate-600 mb-8 leading-relaxed font-medium">
+          <p className="max-w-2xl mx-auto text-xl text-slate-300 mb-8 leading-relaxed font-medium">
             Somos especialistas em reverter multas injustas, defender contra suspensão da CNH e oferecer consultoria jurídica completa com atendimento 100% personalizado.
           </p>
 
@@ -81,7 +81,7 @@ export default function LandingPage() {
             </a>
             <a
               href="#about"
-              className="w-full sm:w-auto px-10 py-5 rounded-2xl font-bold text-lg text-slate-700 hover:bg-slate-100 transition-all border border-slate-200 shadow-sm"
+              className="w-full sm:w-auto px-10 py-5 rounded-2xl font-bold text-lg text-white hover:bg-white/10 transition-all border border-white/20 shadow-sm"
             >
               Conheça nosso trabalho
             </a>
