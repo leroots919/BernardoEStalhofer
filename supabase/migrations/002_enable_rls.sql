@@ -115,5 +115,8 @@ CREATE POLICY "Admins can read all files" ON process_files
 CREATE POLICY "Admins can upload all files" ON process_files
   FOR INSERT WITH CHECK (is_admin());
 
+CREATE POLICY "Admins can update all files" ON process_files
+  FOR UPDATE USING (is_admin());
+
 CREATE POLICY "Admins can delete all files" ON process_files
   FOR DELETE USING (is_admin());
