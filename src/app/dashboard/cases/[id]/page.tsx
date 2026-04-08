@@ -5,6 +5,7 @@ import {
   Calendar,
   User,
   ShieldCheck,
+  Phone,
   ExternalLink,
   ChevronRight,
   FolderOpen,
