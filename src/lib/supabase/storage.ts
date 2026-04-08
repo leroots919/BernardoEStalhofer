@@ -33,7 +33,7 @@ export async function uploadFile(file: File, caseId: string, userId: string) {
   return data
 }
 
-export async function getFileUrl(filePath: string) {
+export function getFileUrl(filePath: string) {
   const supabase = createClient()
   const { data } = supabase.storage.from('process-files').getPublicUrl(filePath)
   return data.publicUrl
