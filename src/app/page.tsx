@@ -6,7 +6,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans selection:bg-brand-primary/30">
       {/* Navbar */}
-      <nav className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-slate-200/60">
+      <nav className="sticky top-0 z-50 bg-brand-dark text-white border-b border-brand-dark/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             <div className="flex items-center gap-3">
@@ -19,28 +19,28 @@ export default function LandingPage() {
               />
             </div>
 
-            <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-600">
-              <a href="#services" className="hover:text-brand-primary transition-colors relative group">
+            <div className="hidden md:flex items-center gap-10 text-sm font-semibold text-slate-200">
+              <a href="#services" className="hover:text-white transition-colors relative group">
                 Serviços
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all group-hover:w-full" />
               </a>
-              <a href="#about" className="hover:text-brand-primary transition-colors relative group">
+              <a href="#about" className="hover:text-white transition-colors relative group">
                 Sobre
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all group-hover:w-full" />
               </a>
-              <a href="#specialization" className="hover:text-brand-primary transition-colors relative group">
+              <a href="#specialization" className="hover:text-white transition-colors relative group">
                 Especialização
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all group-hover:w-full" />
               </a>
-              <a href="#contact" className="hover:text-brand-primary transition-colors relative group">
+              <a href="#contact" className="hover:text-white transition-colors relative group">
                 Contato
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full" />
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-white transition-all group-hover:w-full" />
               </a>
             </div>
 
             <Link
               href="/login"
-              className="bg-brand-primary text-white px-6 py-2.5 rounded-full text-sm font-bold hover:bg-brand-primary/90 transition-all shadow-lg shadow-brand-primary/20 hover:shadow-brand-primary/40 ring-2 ring-white"
+              className="bg-white text-brand-dark px-6 py-2.5 rounded-full text-sm font-bold hover:bg-slate-100 transition-all shadow-lg shadow-white/10 ring-2 ring-white/20"
             >
               Login
             </Link>
