@@ -125,7 +125,7 @@ export default async function CasesPage({
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-slate-600">
-                        {caseItem.profiles?.name || 'N/A'}
+                        {(Array.isArray(caseItem.profiles) ? caseItem.profiles[0]?.name : caseItem.profiles?.name) || 'N/A'}
                       </div>
                     </td>
                     <td className="px-6 py-4">

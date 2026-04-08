@@ -125,18 +125,18 @@ export default async function CaseDetailsPage({
             <div className="p-6 space-y-6">
               <div className="flex items-center gap-4 mb-6">
                 <div className="w-12 h-12 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold text-lg">
-                  {caseData.profiles?.name?.[0].toUpperCase() || 'C'}
+                  {(Array.isArray(caseData.profiles) ? caseData.profiles[0]?.name?.[0] : caseData.profiles?.name?.[0])?.toUpperCase() || 'C'}
                 </div>
                 <div>
-                  <div className="font-bold text-slate-900">{caseData.profiles?.name}</div>
-                  <div className="text-xs text-slate-500">{caseData.profiles?.email}</div>
+                  <div className="font-bold text-slate-900">{(Array.isArray(caseData.profiles) ? caseData.profiles[0]?.name : caseData.profiles?.name)}</div>
+                  <div className="text-xs text-slate-500">{(Array.isArray(caseData.profiles) ? caseData.profiles[0]?.email : caseData.profiles?.email)}</div>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div className="flex items-start gap-3 text-sm">
                   <Phone className="w-4 h-4 text-slate-400 mt-0.5" />
-                  <span className="text-slate-600">{caseData.profiles?.phone || 'Não informado'}</span>
+                  <span className="text-slate-600">{(Array.isArray(caseData.profiles) ? caseData.profiles[0]?.phone : caseData.profiles?.phone) || 'Não informado'}</span>
                 </div>
                 <div className="flex items-start gap-3 text-sm">
                   <ShieldCheck className="w-4 h-4 text-slate-400 mt-0.5" />

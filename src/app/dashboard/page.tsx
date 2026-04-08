@@ -128,10 +128,10 @@ export default async function DashboardPage() {
                   <tr key={caseItem.id} className="hover:bg-slate-50 transition-colors group">
                     <td className="px-6 py-4">
                       <div className="text-sm font-medium text-brand-dark">
-                        {caseItem.profiles?.name || 'N/A'}
+                        {(Array.isArray(caseItem.profiles) ? caseItem.profiles[0]?.name : caseItem.profiles?.name) || 'N/A'}
                       </div>
                       <div className="text-xs text-slate-500">
-                        {caseItem.profiles?.email}
+                        {(Array.isArray(caseItem.profiles) ? caseItem.profiles[0]?.email : caseItem.profiles?.email)}
                       </div>
                     </td>
                     <td className="px-6 py-4 text-sm text-slate-600">
