@@ -65,7 +65,7 @@ export default async function CaseDetailsPage({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Serviço Contratado</label>
-                  <p className="text-slate-900 font-medium">{caseData.services?.name || 'N/A'}</p>
+                  <p className="text-slate-900 font-medium">{(Array.isArray(caseData.services) ? (caseData.services[0] as {name: string})?.name : (caseData.services as {name: string})?.name) || 'N/A'}</p>
                 </div>
                 <div className="space-y-1">
                   <label className="text-xs font-medium text-slate-500 uppercase tracking-wider">Status Atual</label>

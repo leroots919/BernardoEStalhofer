@@ -139,7 +139,7 @@ export default async function DashboardPage() {
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-xs font-medium px-2 py-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
-                        {caseItem.services?.name || 'N/A'}
+                        {(Array.isArray(caseItem.services) ? (caseItem.services[0] as {name: string})?.name : (caseItem.services as {name: string})?.name) || 'N/A'}
                       </span>
                     </td>
                     <td className="px-6 py-4">
