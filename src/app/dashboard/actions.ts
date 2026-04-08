@@ -67,8 +67,9 @@ export async function updateCaseStatus(id: string, status: string): Promise<Acti
   }
 
   // 3. Trigger WhatsApp Notification
-  const phone = caseData.profiles?.phone
-  const clientName = caseData.profiles?.name || 'cliente'
+  const profile = Array.isArray(caseData.profiles) ? caseData.profiles[0] : caseData.profiles
+  const phone = profile?.phone
+  const clientName = profile?.name || 'cliente'
   const caseTitle = caseData.title
 
   if (phone) {
