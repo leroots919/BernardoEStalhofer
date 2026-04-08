@@ -16,7 +16,7 @@ import Link from 'next/link'
 export default async function CasesPage({
   searchParams,
 }: {
-  searchParams: { status?: string })
+  searchParams: { status?: string }
 }) {
   const supabase = await createClient()
   const currentStatus = searchParams.status
