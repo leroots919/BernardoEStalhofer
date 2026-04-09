@@ -271,7 +271,7 @@ export default function LandingPage() {
       </section>
 
       {/* Specialization Section */}
-      <section id="specialization" className="py-32 bg-brand-dark text-white relative overflow-hidden">
+      <section id="specialization" className="py-32 bg-white text-slate-900 relative overflow-hidden">
         <div className="absolute top-0 right-0 w-1/2 h-full bg-brand-primary/5 blur-[120px] rounded-full" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-20">
@@ -281,11 +281,11 @@ export default function LandingPage() {
 
           <div className="max-w-3xl mx-auto text-center mb-20">
             <h3 className="text-3xl font-bold mb-8 text-brand-primary/80">Escritório de Advocacia Especializado em Direito de Trânsito</h3>
-            <p className="text-xl text-slate-300 leading-relaxed mb-8">
+            <p className="text-xl text-slate-600 leading-relaxed mb-8">
               Temos a Experiência para Resolver Casos Complexos, incluindo CNH Cassada, Suspensa, Bloqueada,
               além de Cancelamento de Multa por Dirigir com a CNH Suspensa.
             </p>
-            <p className="text-xl text-slate-300 leading-relaxed mb-12">
+            <p className="text-xl text-slate-600 leading-relaxed mb-12">
               Atuamos há mais de 10 anos na Defesa do Direito de Dirigir, Ajudando Condutores a Manterem
               o Direito e a Liberdade de Dirigir.
             </p>
@@ -299,11 +299,11 @@ export default function LandingPage() {
               { name: 'Dr. Lucas Bernardo', oab: 'OAB/RS 102.336', icon: '👨‍💼' },
               { name: 'Dra. Sônia Stahlhöfer', oab: 'OAB/RS 110.390', icon: '👩‍💼' },
             ].map((lawyer, idx) => (
-              <div key={idx} className="p-10 rounded-3xl bg-slate-800 border border-slate-700 flex items-center gap-8 hover:bg-slate-700 transition-all shadow-xl group">
+              <div key={idx} className="p-10 rounded-3xl bg-slate-50 border border-slate-200 flex items-center gap-8 hover:bg-white hover:shadow-xl transition-all group">
                 <div className="text-6xl group-hover:scale-110 transition-transform duration-300">{lawyer.icon}</div>
                 <div>
-                  <h4 className="text-2xl font-bold">{lawyer.name}</h4>
-                  <p className="text-slate-400 font-medium text-lg">{lawyer.oab}</p>
+                  <h4 className="text-2xl font-bold text-slate-900">{lawyer.name}</h4>
+                  <p className="text-slate-500 font-medium text-lg">{lawyer.oab}</p>
                 </div>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer id="contact" className="py-20 bg-white border-t border-slate-200">
+      <footer id="contact" className="py-20 bg-brand-dark text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-16 mb-16">
             <div className="space-y-6">
@@ -325,14 +325,14 @@ export default function LandingPage() {
                   className="h-9 w-auto object-contain"
                 />
               </div>
-              <p className="text-slate-600 text-sm leading-relaxed">
+              <p className="text-slate-300 text-sm leading-relaxed">
                 Advocacia de Trânsito é uma Sociedade de Advogados inscrita na OAB/RS. 9.012 e CNPJ sob o n° 34150.525000125
               </p>
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-slate-900 uppercase tracking-widest text-sm">Contatos</h4>
-              <ul className="space-y-4 text-slate-600 text-sm font-medium">
+              <h4 className="font-bold text-white uppercase tracking-widest text-sm">Contatos</h4>
+              <ul className="space-y-4 text-slate-300 text-sm font-medium">
                 <li className="flex items-center gap-3 group cursor-pointer">
                   <MessageCircle className="w-5 h-5 text-brand-primary group-hover:scale-110 transition-transform" />
                   (51) 99357-7272
@@ -343,25 +343,28 @@ export default function LandingPage() {
                 </li>
                 <li className="flex items-center gap-3 group cursor-pointer">
                   <div className="w-5 h-5 text-brand-primary font-bold group-hover:scale-110 transition-transform">📍</div>
-                  Av. Assis Brasil, 3535/1307 - Porto Alegre/RS
+                  Av. Assis Brasil, 3535/1307 - Jardim Lindóia - Porto Alegre/RS - CEP: 91110-000
                 </li>
               </ul>
             </div>
 
             <div className="space-y-6">
-              <h4 className="font-bold text-slate-900 uppercase tracking-widest text-sm">Redes Sociais</h4>
+              <h4 className="font-bold text-white uppercase tracking-widest text-sm">Redes Sociais</h4>
               <div className="flex gap-5">
-                <a href="https://www.instagram.com/bernardostahlhofer.adv/#" target="_blank" className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-brand-primary hover:text-white transition-all shadow-sm hover:shadow-md">
+                <a href="https://www.instagram.com/bernardostahlhofer.adv/#" target="_blank" className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-brand-primary transition-all shadow-sm hover:shadow-md">
                   <Instagram className="w-6 h-6" />
                 </a>
-                <a href="https://www.facebook.com/profile.php?id=100065278111661#" target="_blank" className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-brand-primary hover:text-white transition-all shadow-sm hover:shadow-md">
+                <a href="https://www.facebook.com/profile.php?id=100065278111661#" target="_blank" className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-brand-primary transition-all shadow-sm hover:shadow-md">
                   <Facebook className="w-6 h-6" />
+                </a>
+                <a href="https://api.whatsapp.com/send/?phone=5551993577272" target="_blank" className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-brand-primary transition-all shadow-sm hover:shadow-md">
+                  <MessageCircle className="w-6 h-6" />
                 </a>
               </div>
             </div>
           </div>
 
-          <div className="pt-10 border-t border-slate-100 text-center text-sm text-slate-500 font-medium">
+          <div className="pt-10 border-t border-white/10 text-center text-sm text-slate-400 font-medium">
             <p>&copy; 2024 Bernardo & Stahlhöfer. Todos os direitos reservados.</p>
           </div>
         </div>
