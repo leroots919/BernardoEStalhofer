@@ -16,7 +16,18 @@
       "Bash(npm run:*)",
       "Bash(\"C:/openClaude/BernardoEStalhofer/.claude/worktrees/agent-a5daf6ed/.env.example\")",
       "Bash(bash -c 'git checkout -b temp-migration-stable 60e551e 2>&1')",
-      "Bash(bash -c 'git show origin/migration-stable:.env.example')"
+      "Bash(bash -c 'git show origin/migration-stable:.env.example')",
+      "Bash(vercel list:*)",
+      "Bash(vercel:*)",
+      "WebFetch(domain:bernardo-e-stalhofer-git-fix-schema-final-leroots919s-projects.vercel.app)",
+      "WebFetch(domain:bernardo-e-stalhofer.vercel.app)",
+      "WebFetch(domain:aura-system-mu.vercel.app)",
+      "WebSearch",
+      "Bash(openclaude mcp:*)",
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_navigate",
+      "Bash(curl -X POST \"https://vasmwzwrqtjksnipiitd.supabase.co/auth/v1/admin/users\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhc213endycXRqa3NuaXBpaXRkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ0Nzk2NCwiZXhwIjoyMDkxMDIzOTY0fQ.Fsk1qD0Vz04awZeBafqkJpJIGx6lfUYCef5wZ0J2DBg\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhc213endycXRqa3NuaXBpaXRkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ0Nzk2NCwiZXhwIjoyMDkxMDIzOTY0fQ.Fsk1qD0Vz04awZeBafqkJpJIGx6lfUYCef5wZ0J2DBg\" -H \"Content-Type: application/json\" -d '{\"\"email\"\": \"\"admin@teste.com\"\", \"\"password\"\": \"\"admin123\"\", \"\"email_confirm\"\": true}')",
+      "Bash(curl -X POST \"https://vasmwzwrqtjksnipiitd.supabase.co/auth/v1/admin/users\" -H \"apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhc213endycXRqa3NuaXBpaXRkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ0Nzk2NCwiZXhwIjoyMDkxMDIzOTY0fQ.Fsk1qD0Vz04awZeBafqkJpJIGx6lfUYCef5wZ0J2DBg\" -H \"Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZhc213endycXRqa3NuaXBpaXRkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTQ0Nzk2NCwiZXhwIjoyMDkxMDIzOTY0fQ.Fsk1qD0Vz04awZeBafqkJpJIGx6lfUYCef5wZ0J2DBg\" -H \"Content-Type: application/json\" -d '{\"\"email\"\": \"\"cliente@teste.com\"\", \"\"password\"\": \"\"cliente123\"\", \"\"email_confirm\"\": true}')"
     ]
   }
 }
