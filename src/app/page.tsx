@@ -1,8 +1,55 @@
+'use client'
+
+import React, { useState } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { ArrowRight, CheckCircle2, Star, MessageCircle, Instagram, Facebook } from 'lucide-react'
+import { ArrowRight, CheckCircle2, Star, MessageCircle, Instagram, Facebook, Send, Loader2 } from 'lucide-react'
+import { supabase } from '@/lib/supabase'
 
 export default function LandingPage() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    message: '',
+  })
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [errorMessage, setErrorMessage] = useState('')
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setStatus('loading')
+    setErrorMessage('')
+
+    try {
+      const { error } = await supabase
+        .from('leads')
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            message: formData.message,
+          },
+        ])
+
+      if (error) throw error
+
+      setStatus('success')
+      setFormData({ name: '', email: '', phone: '', message: '' })
+    } catch (error: unknown) {
+      console.error('Error submitting lead:', error)
+      const message = error instanceof Error ? error.message : 'Ocorreu um erro ao enviar a mensagem. Tente novamente.'
+      setErrorMessage(message)
+      setStatus('error')
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target
+    setFormData((prev) => ({ ...prev, [name]: value }))
+  }
+
   return (
     <div className="flex flex-col min-h-screen bg-white text-slate-900 font-sans selection:bg-brand-primary/30">
       {/* Navbar */}
@@ -307,6 +354,124 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Form Section */}
+      <section id="contact-form" className="py-32 bg-slate-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-20 items-start">
+            <div className="space-y-10">
+              <div>
+                <h2 className="text-4xl md:text-5xl font-serif font-bold text-slate-900 mb-6">Fale Conosco</h2>
+                <div className="w-24 h-1.5 bg-brand-primary rounded-full mb-8" />
+              </div>
+              <p className="text-xl text-slate-600 leading-relaxed">
+                Estamos prontos para analisar seu caso com a atenção e o rigor técnico que ele exige.
+                Preencha o formulário ao lado e nossa equipe entrará em contato o mais breve possível.
+              </p>
+              <div className="space-y-6">
+                {[
+                  { title: 'Atendimento Personalizado', desc: 'Cada caso é único e tratado com exclusividade.', icon: <CheckCircle2 className="w-6 h-6 text-brand-primary" /> },
+                  { title: 'Análise Técnica Rigorosa', desc: 'Estudo detalhado da legislação e jurisprudência.', icon: <CheckCircle2 className="w-6 h-6 text-brand-primary" /> },
+                  { title: 'Sigilo Profissional', desc: 'Garantia absoluta de confidencialidade dos seus dados.', icon: <CheckCircle2 className="w-6 h-6 text-brand-primary" /> },
+                ].map((item, idx) => (
+                  <div key={idx} className="flex gap-4 items-start">
+                    <div className="mt-1">{item.icon}</div>
+                    <div>
+                      <p className="font-bold text-slate-900 text-lg">{item.title}</p>
+                      <p className="text-slate-600">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="bg-white p-8 md:p-12 rounded-[40px] shadow-2xl shadow-slate-200/60 border border-slate-100">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">Nome Completo</label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      value={formData.name}
+                      onChange={handleInputChange}
+                      placeholder="Ex: João Silva"
+                      className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all bg-slate-50/50"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-bold text-slate-700 ml-1">E-mail</label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      placeholder="joao@email.com"
+                      className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all bg-slate-50/50"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Telefone / WhatsApp</label>
+                  <input
+                      type="tel"
+                      name="phone"
+                      required
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      placeholder="(51) 99999-9999"
+                      className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all bg-slate-50/50"
+                    />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-bold text-slate-700 ml-1">Descrição do Caso</label>
+                  <textarea
+                    name="message"
+                    required
+                    rows={4}
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Descreva brevemente a sua situação..."
+                    className="w-full px-6 py-4 rounded-2xl border border-slate-200 focus:border-brand-primary focus:ring-4 focus:ring-brand-primary/10 outline-none transition-all bg-slate-50/50 resize-none"
+                  />
+                </div>
+
+                {status === 'error' && (
+                  <div className="p-4 rounded-2xl bg-red-50 text-red-600 text-sm font-medium border border-red-100 animate-shake">
+                    {errorMessage}
+                  </div>
+                )}
+
+                {status === 'success' && (
+                  <div className="p-4 rounded-2xl bg-green-50 text-green-600 text-sm font-medium border border-green-100 animate-fade-in">
+                    ✓ Mensagem enviada com sucesso! Entraremos em contato em breve.
+                  </div>
+                )}
+
+                <button
+                  type="submit"
+                  disabled={status === 'loading'}
+                  className="w-full flex items-center justify-center gap-3 bg-brand-primary text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-brand-primary/90 transition-all shadow-xl shadow-brand-primary/30 disabled:opacity-70 disabled:cursor-not-allowed group"
+                >
+                  {status === 'loading' ? (
+                    <>
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                      Enviando...
+                    </>
+                  ) : (
+                    <>
+                      Enviar Solicitação
+                      <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                    </>
+                  )}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </section>
