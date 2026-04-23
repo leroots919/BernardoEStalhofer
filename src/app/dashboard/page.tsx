@@ -29,7 +29,7 @@ interface Case {
 }
 
 interface Profile {
-  full_name: string
+  name: string
   email: string
 }
 
@@ -62,16 +62,16 @@ export default function Dashboard() {
           .from('profiles')
           .select('*')
           .eq('id', user.id)
-          .single()
+          .maybeSingle()
 
         if (profileError) console.error('Profile fetch error:', profileError)
         setProfile(profileData as Profile)
 
         // 3. Fetch Cases
         const { data: casesData, error: casesError } = await supabase
-          .from('cases')
+          .from('client_cases')
           .select('*, case_documents(*)')
-          .eq('client_id', user.id)
+          .eq('user_id', user.id)
 
         if (casesError) console.error('Cases fetch error:', casesError)
         setCases(casesData as Case[] || [])
@@ -133,7 +133,7 @@ export default function Dashboard() {
           <h1 className="text-2xl font-serif font-bold text-slate-900">Painel do Cliente</h1>
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-slate-900">{profile?.full_name || 'Cliente'}</p>
+              <p className="text-sm font-bold text-slate-900">{profile?.name || 'Cliente'}</p>
               <p className="text-xs text-slate-500"> Bem-vindo ao seu portal seguro</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center text-brand-primary ring-2 ring-brand-primary/20">
@@ -148,7 +148,7 @@ export default function Dashboard() {
             <div className="p-8 rounded-[32px] bg-gradient-to-r from-brand-dark to-blue-900 text-white shadow-xl relative overflow-hidden">
               <div className="absolute top-0 right-0 w-64 h-64 bg-brand-primary/20 rounded-full blur-3xl -mr-32 -mt-32" />
               <div className="relative z-10">
-                <h2 className="text-3xl font-serif font-bold mb-2">Olá, {profile?.full_name || 'Cliente'}!</h2>
+                <h2 className="text-3xl font-serif font-bold mb-2">Olá, {profile?.name || 'Cliente'}!</h2>
                 <p className="text-blue-100 text-lg max-w-2xl">
                   Acompanhe aqui a evolução de seus processos, visualize documentos e verifique as atualizações mais recentes de forma segura.
                 </p>
