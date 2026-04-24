@@ -108,12 +108,10 @@ export default function AdminClientDetailPage({ params }: { params: { id: string
     const description = formData.get('description') as string
     const status = formData.get('status') as string
 
-    const result = await createCase({
-      userId: params.id,
-      title,
-      description,
-      status
-    })
+    formData.append('userId', params.id)
+    formData.append('serviceId', 'default-service-id')
+
+    const result = await createCase({ success: false, message: '' }, formData)
 
     if (result.success) {
       setIsCaseModalOpen(false)
