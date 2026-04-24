@@ -19,6 +19,14 @@ interface CaseDocument {
   file_path: string
 }
 
+interface DocumentRequest {
+  id: string
+  case_id: string
+  document_name: string
+  status: string
+  created_at: string
+}
+
 interface Case {
   id: string
   case_number: string
@@ -41,6 +49,7 @@ export default function Dashboard() {
   const [user, setUser] = useState<SupabaseUser | null>(null)
   const [profile, setProfile] = useState<Profile | null>(null)
   const [cases, setCases] = useState<Case[]>([])
+  const [pendingRequests, setPendingRequests] = useState<DocumentRequest[]>([])
   const [loading, setLoading] = useState(true)
   const router = useRouter()
 
@@ -74,7 +83,21 @@ export default function Dashboard() {
           .eq('user_id', user.id)
 
         if (casesError) console.error('Cases fetch error:', casesError)
-        setCases(casesData as Case[] || [])
+        const fetchedCases = (casesData as Case[]) || []
+        setCases(fetchedCases)
+
+        // 4. Fetch Pending Document Requests
+        if (fetchedCases.length > 0) {
+          const caseIds = fetchedCases.map(c => c.id)
+          const { data: requestsData, error: requestsError } = await supabase
+            .from('document_requests')
+            .select('*')
+            .in('case_id', caseIds)
+            .in('status', ['pending', 'uploaded'])
+
+          if (requestsError) console.error('Requests fetch error:', requestsError)
+          setPendingRequests(requestsData as DocumentRequest[] || [])
+        }
 
       } catch (error) {
         console.error('Dashboard load error:', error)
@@ -154,6 +177,42 @@ export default function Dashboard() {
                 </p>
               </div>
             </div>
+
+            {/* Pending Documents Alert */}
+            {pendingRequests.length > 0 && (
+              <div className="p-6 rounded-[32px] bg-amber-50 border border-amber-200 shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="p-3 bg-amber-100 rounded-2xl text-amber-600">
+                    <AlertCircle className="w-6 h-6" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-amber-900 mb-1">Documentos Pendentes</h3>
+                    <p className="text-amber-700 mb-4">
+                      Você tem {pendingRequests.length} solicitação(ões) de documentos aguardando sua atenção.
+                    </p>
+                    <div className="flex flex-wrap gap-3">
+                      {pendingRequests.map((req) => (
+                        <div key={req.id} className="px-4 py-2 rounded-full bg-white border border-amber-200 text-sm font-medium text-amber-800 flex items-center gap-2">
+                          <FileText className="w-3 h-3" />
+                          {req.document_name}
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full uppercase font-bold ${
+                            req.status === 'uploaded' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'
+                          }`}>
+                            {req.status === 'uploaded' ? 'Em análise' : 'Pendente'}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => router.push('/dashboard/documents')}
+                      className="mt-6 text-amber-900 font-bold text-sm flex items-center gap-1 hover:underline"
+                    >
+                      Ver todos os documentos <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Cases Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
