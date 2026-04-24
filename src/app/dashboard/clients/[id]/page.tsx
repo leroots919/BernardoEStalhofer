@@ -251,7 +251,7 @@ export default function AdminClientDetailPage({ params }: { params: { id: string
                     <button
                       onClick={() => {
                         const desc = prompt('Digite o evento para a linha do tempo:')
-                        if (desc) addCustomCaseEvent(caseItem.id, desc)
+                        if (desc) addCustomCaseEvent(caseItem.id, desc, 'Atualização')
                       }}
                       className="p-2 text-slate-400 hover:text-brand-primary transition-colors"
                       title="Adicionar Evento"
