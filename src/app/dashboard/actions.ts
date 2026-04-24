@@ -160,7 +160,7 @@ export async function requestDocument(caseId: string, documentName: string): Pro
   }
 
   revalidatePath('/dashboard/cases')
-  revalidatePath(\`/dashboard/cases/\${caseId}\`)
+  revalidatePath(`/dashboard/cases/${caseId}`)
 
 }
 
@@ -221,8 +221,9 @@ export async function uploadCaseDocument(formData: FormData): Promise<ActionResp
     revalidatePath(`/dashboard/cases/${caseId}`)
 
     return { success: true, message: 'Documento enviado com sucesso!' }
-  } catch (error: any) {
-    return { success: false, message: `Erro inesperado: ${error.message}` }
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Erro desconhecido'
+    return { success: false, message: `Erro inesperado: ${message}` }
   }
 }
 
