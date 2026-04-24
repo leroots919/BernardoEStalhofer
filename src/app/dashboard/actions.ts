@@ -135,7 +135,7 @@ export async function requestDocument(caseId: string, documentName: string): Pro
     })
 
   if (requestError) {
-    return { success: false, message: \`Erro ao solicitar documento: \${requestError.message}\` }
+    return { success: false, message: `Erro ao solicitar documento: ${requestError.message}` }
   }
 
   // 2. Get case and client info for notification
@@ -152,7 +152,7 @@ export async function requestDocument(caseId: string, documentName: string): Pro
     const caseTitle = caseData.title
 
     if (phone) {
-      const message = \`Olá \${clientName}! O escritório solicitou um novo documento para o seu processo "\${caseTitle}": \${documentName}. Você pode enviá-lo através do seu portal.`
+      const message = `Olá ${clientName}! O escritório solicitou um novo documento para o seu processo "${caseTitle}": ${documentName}. Você pode enviá-lo através do seu portal.`
       whatsappService.sendNotification(phone, message).catch(err =>
         console.error('Background WhatsApp Notification Error:', err)
       )
