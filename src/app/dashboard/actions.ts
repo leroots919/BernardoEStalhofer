@@ -162,6 +162,7 @@ export async function requestDocument(caseId: string, documentName: string): Pro
   revalidatePath('/dashboard/cases')
   revalidatePath(`/dashboard/cases/${caseId}`)
 
+  return { success: true, message: 'Documento solicitado com sucesso!' }
 }
 
 export async function uploadCaseDocument(formData: FormData): Promise<ActionResponse> {
