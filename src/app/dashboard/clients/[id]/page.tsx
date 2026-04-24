@@ -16,7 +16,8 @@ import {
   Search,
   User,
   Phone,
-  Mail
+  Mail,
+  Loader2
 } from 'lucide-react'
 import {
   createCase,
