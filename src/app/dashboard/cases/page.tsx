@@ -1,11 +1,13 @@
 import { createClient } from '@/lib/supabase/server'
 import {
   Briefcase,
-  Plus,
-  ArrowUpRight,
 } from 'lucide-react'
 import Link from 'next/link'
 import CaseTable from './CaseTable'
+import CreateCaseModal from './CreateCaseModal'
+
+interface CaseItem {
+
 
 interface CaseItem {
   id: string
@@ -58,13 +60,8 @@ export default async function CasesPage({
           <h1 className="text-3xl font-serif font-bold text-brand-dark tracking-tight">Gestão de Processos</h1>
           <p className="text-slate-500">Controle e acompanhe todos os casos jurídicos do escritório.</p>
         </div>
-        <Link
-          href="/dashboard/cases/new"
-          className="flex items-center justify-center gap-2 bg-brand-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-brand-dark transition-all shadow-lg active:scale-95"
-        >
-          <Plus className="w-5 h-5" />
-          Novo Processo
-        </Link>
+        <CreateCaseModal />
+      </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8">

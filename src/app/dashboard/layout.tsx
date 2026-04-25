@@ -24,12 +24,22 @@ export default async function DashboardLayout({
     redirect('/login')
   }
 
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('type')
+    .eq('id', user.id)
+    .single()
+
+  const isAdmin = profile?.type === 'admin'
+
   const navItems = [
     { name: 'Visão Geral', href: '/dashboard', icon: LayoutDashboard },
-    { name: 'Clientes', href: '/dashboard/clients', icon: Users },
+    ...(isAdmin ? [
+      { name: 'Clientes', href: '/dashboard/clients', icon: Users },
+      { name: 'Configurações', href: '/dashboard/settings', icon: Settings },
+    ] : []),
     { name: 'Processos', href: '/dashboard/cases', icon: Briefcase },
     { name: 'Documentos', href: '/dashboard/documents', icon: FileText },
-    { name: 'Configurações', href: '/dashboard/settings', icon: Settings },
   ]
 
   return (
@@ -41,7 +51,7 @@ export default async function DashboardLayout({
             BS
           </div>
           <span className="font-serif font-bold text-lg text-white truncate">
-            Painel Admin
+            {isAdmin ? 'Painel Admin' : 'Meu Portal'}
           </span>
         </div>
 
@@ -86,7 +96,7 @@ export default async function DashboardLayout({
           <div className="flex items-center gap-4">
             <div className="text-right hidden sm:block">
               <p className="text-sm font-medium text-slate-900">{user.email}</p>
-              <p className="text-xs text-slate-500">Administrador</p>
+              <p className="text-xs text-slate-500">{isAdmin ? 'Administrador' : 'Cliente'}</p>
             </div>
             <div className="w-10 h-10 rounded-full bg-brand-primary/10 text-brand-primary flex items-center justify-center font-bold border border-brand-primary/20">
               {user.email?.[0].toUpperCase()}

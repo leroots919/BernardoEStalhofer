@@ -4,7 +4,42 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { whatsappService } from '@/lib/notifications/whatsapp'
 
+export async function createClient(formData: FormData): Promise<ActionResponse> {
+  const supabase = await createClient()
+
+  const name = formData.get('name') as string
+  const email = formData.get('email') as string
+  const phone = formData.get('phone') as string
+  const city = formData.get('city') as string
+  const state = formData.get('state') as string
+
+  if (!name || !email) {
+    return { success: false, message: 'Nome e e-mail são obrigatórios.' }
+  }
+
+  // Note: In a real production app, we would use a Supabase Edge Function
+  // or the service_role key to create the auth.user first.
+  // For now, we are creating the profile record.
+  const { error } = await supabase
+    .from('profiles')
+    .insert({
+      name,
+      email,
+      phone,
+      city,
+      state,
+      type: 'cliente',
+    })
+
+  if (error) {
+    return { success: false, message: `Erro ao criar cliente: ${error.message}` }
+  }
+
+  return { success: true, message: 'Cliente criado com sucesso!' }
+}
+
 export type ActionResponse = {
+
   success: boolean
   message: string
 }

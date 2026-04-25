@@ -1,8 +1,9 @@
 import { createClient } from '@/lib/supabase/server'
-import {
-  Plus,
-} from 'lucide-react'
 import ClientTable from './ClientTable'
+import CreateClientModal from './CreateClientModal'
+
+export default async function ClientsPage() {
+
 
 export default async function ClientsPage() {
   const supabase = await createClient()
@@ -28,10 +29,8 @@ export default async function ClientsPage() {
           <h1 className="text-3xl font-serif font-bold text-brand-dark tracking-tight">Gestão de Clientes</h1>
           <p className="text-slate-500">Gerencie todos os clientes cadastrados no sistema.</p>
         </div>
-        <button className="flex items-center justify-center gap-2 bg-brand-primary text-white px-6 py-3 rounded-2xl font-bold hover:bg-brand-dark transition-all shadow-lg active:scale-95">
-          <Plus className="w-5 h-5" />
-          Novo Cliente
-        </button>
+        <CreateClientModal />
+      </div>
       </div>
 
       <ClientTable initialClients={clients || []} />
