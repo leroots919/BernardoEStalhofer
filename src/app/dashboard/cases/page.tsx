@@ -7,9 +7,6 @@ import CaseTable from './CaseTable'
 import CreateCaseModal from './CreateCaseModal'
 
 interface CaseItem {
-
-
-interface CaseItem {
   id: string
   title: string
   status: string
@@ -61,7 +58,6 @@ export default async function CasesPage({
           <p className="text-slate-500">Controle e acompanhe todos os casos jurídicos do escritório.</p>
         </div>
         <CreateCaseModal />
-      </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8">
