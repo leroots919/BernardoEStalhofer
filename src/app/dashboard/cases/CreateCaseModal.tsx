@@ -4,14 +4,14 @@ import React, { useState, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import { createCase } from '@/app/dashboard/actions'
 import { useRouter } from 'next/navigation'
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 
 export default function CreateCaseModal() {
   const [isOpen, setIsOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [clients, setClients] = useState<{ id: string; name: string }[]>([])
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = createClient()
 
   useEffect(() => {
     async function fetchClients() {

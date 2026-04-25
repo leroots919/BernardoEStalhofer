@@ -3,9 +3,6 @@ import ClientTable from './ClientTable'
 import CreateClientModal from './CreateClientModal'
 
 export default async function ClientsPage() {
-
-
-export default async function ClientsPage() {
   const supabase = await createClient()
 
   const { data: clients, error } = await supabase
@@ -30,7 +27,6 @@ export default async function ClientsPage() {
           <p className="text-slate-500">Gerencie todos os clientes cadastrados no sistema.</p>
         </div>
         <CreateClientModal />
-      </div>
       </div>
 
       <ClientTable initialClients={clients || []} />
