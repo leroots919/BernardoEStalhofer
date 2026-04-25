@@ -4,7 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import { whatsappService } from '@/lib/notifications/whatsapp'
 
-export async function createClient(formData: FormData): Promise<ActionResponse> {
+export async function createClientProfile(formData: FormData): Promise<ActionResponse> {
   const supabase = await createClient()
 
   const name = formData.get('name') as string

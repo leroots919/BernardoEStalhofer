@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Plus, X } from 'lucide-react'
-import { createClient } from '@/app/dashboard/actions'
+import { createClientProfile } from '@/app/dashboard/actions'
 import { useRouter } from 'next/navigation'
 
 export default function CreateClientModal() {
@@ -15,7 +15,7 @@ export default function CreateClientModal() {
     setLoading(true)
 
     const formData = new FormData(e.currentTarget)
-    const result = await createClient(formData)
+    const result = await createClientProfile(formData)
 
     if (result.success) {
       setIsOpen(false)
